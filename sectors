@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sectors — laize.ai</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0d0a;--ink2:#2a2620;--ink3:#3d3830;
+  --sand:#f5f0e8;--sand2:#ede6d8;--sand3:#e2d8c8;--sand4:#c8bca8;
+  --warm:#c8a882;--warm2:#a8845a;
+  --sage2:#5a7d6a;--sage3:#d8e8dc;
+  --rust:#c85a38;--rust2:#e87850;--rust3:#f5e0d8;
+  --clay2:#e8c89a;--cream:#faf8f4;--r:12px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--sand2);
+  font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+  color:var(--ink);font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+}
+
+/* ── NAV ── */
+.nav{
+  background:var(--ink);height:50px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;position:sticky;top:0;z-index:200;
+}
+.logo{
+  font-family:Georgia,serif;font-size:17px;font-weight:700;
+  color:var(--sand);letter-spacing:-.5px;text-decoration:none;
+}
+.logo em{font-style:italic;color:var(--clay2)}
+.nav-links{display:flex}
+.nl{
+  font-size:12px;color:rgba(245,240,232,.42);
+  padding:0 1rem;height:50px;display:flex;align-items:center;
+  cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .2s;text-decoration:none;
+}
+.nl:hover{color:var(--sand)}
+.nl.on{color:var(--sand);border-bottom-color:var(--rust)}
+.nav-r{display:flex;gap:8px;align-items:center}
+.nav-user{font-size:11px;color:rgba(245,240,232,.35)}
+.pill{
+  background:var(--rust);color:#fff;border:none;
+  border-radius:100px;padding:7px 16px;font-size:12px;
+  font-weight:600;cursor:pointer;transition:all .2s;
+}
+.pill:hover{background:var(--rust2)}
+
+/* ── SHELL ── */
+.shell{
+  display:grid;grid-template-columns:186px 1fr;
+  min-height:calc(100vh - 50px);background:var(--cream);
+}
+
+/* ── SIDEBAR ── */
+.sb{
+  background:var(--ink);padding:1.25rem 1rem;
+  display:flex;flex-direction:column;gap:2px;
+  position:sticky;top:50px;height:calc(100vh - 50px);overflow-y:auto;
+}
+.sb-logo{
+  font-family:Georgia,serif;font-size:16px;font-weight:700;
+  color:var(--sand);letter-spacing:-.5px;
+  padding-bottom:1rem;border-bottom:1px solid rgba(245,240,232,.08);
+  margin-bottom:.6rem;
+}
+.sb-logo em{font-style:italic;color:var(--clay2)}
+.snav{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;
+  border-radius:8px;font-size:12px;color:rgba(245,240,232,.42);
+  cursor:pointer;transition:all .2s;text-decoration:none;
+}
+.snav:hover,.snav.on{background:rgba(245,240,232,.08);color:var(--sand)}
+.snavdot{
+  width:5px;height:5px;border-radius:50%;background:var(--rust);
+  flex-shrink:0;opacity:0;
+}
+.snav.on .snavdot{opacity:1}
+.sb-back{
+  display:flex;align-items:center;gap:7px;padding:7px 10px;
+  border-radius:8px;font-size:11px;color:rgba(245,240,232,.35);
+  cursor:pointer;transition:all .2s;margin-bottom:4px;
+}
+.sb-back:hover{background:rgba(245,240,232,.06);color:rgba(245,240,232,.6)}
+.sb-sector-title{
+  padding:6px 10px;font-size:13px;font-weight:700;
+  color:var(--sand);letter-spacing:-.3px;margin-bottom:2px;
+}
+.sb-divider{height:1px;background:rgba(245,240,232,.07);margin:.65rem 0}
+.sb-foot{
+  margin-top:auto;padding-top:.85rem;
+  border-top:1px solid rgba(245,240,232,.07);
+}
+.suser{display:flex;align-items:center;gap:8px}
+.sav{
+  width:28px;height:28px;border-radius:50%;background:var(--rust3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--rust);
+}
+.sun{font-size:11px;font-weight:600;color:rgba(245,240,232,.52)}
+.sur{font-size:10px;color:rgba(245,240,232,.22)}
+
+/* ── MAIN ── */
+.main{padding:1.5rem;overflow:hidden}
+.sec-lbl{
+  font-size:9px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--warm2);font-weight:600;
+}
+
+/* ── BADGES ── */
+.bdg{border-radius:100px;padding:3px 9px;font-size:10px;font-weight:600}
+.bdg-free{background:var(--sage3);color:var(--sage2)}
+.bdg-paid{background:var(--rust3);color:var(--rust)}
+.bdg-new{background:var(--ink);color:var(--sand)}
+.bdg-hot{background:var(--rust3);color:var(--rust)}
+
+/* ── SECTOR PICKER ── */
+.picker-h1{
+  font-family:Georgia,serif;font-size:26px;font-weight:700;
+  letter-spacing:-1px;color:var(--ink);margin-bottom:.35rem;
+}
+.picker-h1 em{font-style:italic;color:var(--rust)}
+.picker-sub{font-size:13px;color:var(--warm2);margin-bottom:1.25rem}
+.picker-search{
+  display:flex;align-items:center;gap:8px;background:var(--sand);
+  border:1px solid var(--sand3);border-radius:100px;
+  padding:8px 16px;margin-bottom:1.5rem;max-width:340px;
+}
+.picker-search input{
+  background:none;border:none;outline:none;
+  font-size:13px;color:var(--ink);flex:1;
+}
+.picker-search input::placeholder{color:var(--warm)}
+.sector-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sector-card{
+  background:var(--sand);border:1px solid var(--sand3);
+  border-radius:var(--r);padding:1.25rem 1rem;
+  cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
+}
+.sector-card:hover{
+  border-color:var(--warm);background:var(--cream);
+  transform:translateY(-3px);
+}
+.sc-icon{
+  font-size:26px;margin-bottom:.75rem;display:block;
+  transition:transform .25s;
+}
+.sector-card:hover .sc-icon{transform:scale(1.1)}
+.sc-name{
+  font-size:14px;font-weight:700;color:var(--ink);
+  margin-bottom:3px;letter-spacing:-.3px;
+}
+.sc-count{font-size:11px;color:var(--warm);font-family:Georgia,serif;font-style:italic}
+.sc-bg{
+  position:absolute;right:-.25rem;bottom:-.75rem;
+  font-family:Georgia,serif;font-size:56px;font-weight:700;
+  color:var(--ink);opacity:.04;line-height:1;pointer-events:none;
+}
+
+/* ── SECTOR HEADER ── */
+.sector-header{
+  background:var(--ink);border-radius:var(--r);
+  padding:1.1rem 1.5rem;margin-bottom:1rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+}
+.sh-title{
+  font-family:Georgia,serif;font-size:19px;font-weight:700;
+  color:var(--sand);letter-spacing:-.8px;
+}
+.sh-sub{font-size:12px;color:rgba(245,240,232,.38);margin-top:2px}
+.sh-stats{display:flex;gap:1.5rem;flex-shrink:0}
+.sh-sn{
+  font-family:Georgia,serif;font-size:22px;font-weight:700;
+  color:var(--sand);letter-spacing:-1px;line-height:1;
+}
+.sh-sl{
+  font-size:9px;color:rgba(245,240,232,.28);
+  text-transform:uppercase;letter-spacing:.1em;margin-top:2px;
+}
+.sh-back{
+  background:rgba(245,240,232,.08);
+  border:1px solid rgba(245,240,232,.12);
+  border-radius:100px;padding:6px 14px;font-size:11px;
+  color:rgba(245,240,232,.6);cursor:pointer;transition:all .2s;
+  white-space:nowrap;flex-shrink:0;
+}
+.sh-back:hover{background:rgba(245,240,232,.14);color:var(--sand)}
+
+/* ── FILTER BAR ── */
+.filterbar{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:1rem;padding-bottom:1rem;
+  border-bottom:1px solid var(--sand3);flex-wrap:wrap;
+}
+.result-c{font-size:12px;color:var(--warm2);margin-left:auto;white-space:nowrap}
+
+/* active chips */
+.active-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.active-chip{
+  display:flex;align-items:center;gap:5px;
+  background:var(--ink);border-radius:100px;
+  padding:4px 10px 4px 12px;font-size:11px;
+  color:var(--sand);font-weight:500;
+}
+.active-chip-x{
+  cursor:pointer;opacity:.6;font-size:14px;
+  line-height:1;transition:opacity .2s;
+}
+.active-chip-x:hover{opacity:1}
+
+/* search input */
+.filter-search{
+  display:flex;align-items:center;gap:7px;
+  background:var(--cream);border:1px solid var(--sand3);
+  border-radius:8px;padding:7px 12px;
+  font-size:12px;color:var(--ink2);
+  transition:border-color .2s;flex:1;max-width:220px;
+}
+.filter-search:focus-within{border-color:var(--warm2)}
+.filter-search input{
+  background:none;border:none;outline:none;
+  font-size:12px;color:var(--ink);flex:1;width:100%;
+}
+.filter-search input::placeholder{color:var(--warm)}
+
+/* dropdown trigger */
+.dd-wrap{position:relative}
+.dd-trigger{
+  display:flex;align-items:center;gap:6px;
+  background:var(--cream);border:1px solid var(--sand3);
+  border-radius:8px;padding:7px 12px;font-size:12px;
+  font-weight:500;color:var(--ink2);cursor:pointer;
+  transition:all .2s;white-space:nowrap;user-select:none;
+}
+.dd-trigger:hover{border-color:var(--warm2)}
+.dd-trigger.open{border-color:var(--ink);background:var(--sand)}
+.dd-trigger.has-val{
+  border-color:var(--ink);background:var(--ink);color:var(--sand);
+}
+.dd-trigger.has-val .dd-arrow{color:rgba(245,240,232,.5)}
+.dd-arrow{font-size:9px;color:var(--warm2);transition:transform .2s;margin-top:1px}
+.dd-trigger.open .dd-arrow{transform:rotate(180deg)}
+.dd-dot{width:6px;height:6px;border-radius:50%;background:var(--rust);flex-shrink:0}
+
+/* dropdown menu */
+.dd-menu{
+  position:absolute;top:calc(100% + 6px);left:0;
+  background:var(--cream);border:1px solid var(--sand3);
+  border-radius:var(--r);min-width:180px;
+  box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:150;
+  overflow:hidden;animation:ddIn .15s ease;
+}
+@keyframes ddIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.dd-menu-header{
+  padding:8px 12px 6px;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--warm2);font-weight:600;
+  border-bottom:1px solid var(--sand3);
+}
+.dd-option{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 12px;font-size:12px;color:var(--ink2);
+  cursor:pointer;transition:background .15s;
+}
+.dd-option:hover{background:var(--sand)}
+.dd-option.on{background:var(--sand);font-weight:600;color:var(--ink)}
+.dd-option.on::after{content:'✓';font-size:11px;color:var(--sage2)}
+.dd-option-count{font-size:10px;color:var(--warm2)}
+.dd-divider{height:1px;background:var(--sand3);margin:4px 0}
+
+/* ── TOOLS GRID ── */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tc{
+  background:var(--sand);border:1px solid var(--sand3);
+  border-radius:var(--r);padding:1rem;cursor:pointer;
+  transition:all .25s;display:flex;flex-direction:column;
+}
+.tc:hover{
+  border-color:var(--warm);background:var(--cream);
+  transform:translateY(-3px);
+}
+.tc.feat{background:var(--ink);border-color:var(--ink);grid-column:span 2}
+.tc.feat .tc-name{color:var(--sand)}
+.tc.feat .tc-desc{color:rgba(245,240,232,.55)}
+.tc.feat .tc-tag-i{
+  background:rgba(245,240,232,.1);
+  border-color:rgba(245,240,232,.15);color:rgba(245,240,232,.6);
+}
+.tc.feat .tc-foot{border-top-color:rgba(245,240,232,.1)}
+.tc.feat .tc-fl{color:rgba(245,240,232,.38)}
+.tc.feat .sd{background:rgba(245,240,232,.2)}
+.tc.feat .sd.on{background:var(--sand)}
+.tc-logo{
+  width:36px;height:36px;border-radius:9px;font-size:14px;
+  font-weight:800;color:#fff;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-bottom:.8rem;
+}
+.tc-top{display:flex;align-items:flex-start;gap:6px;margin-bottom:.4rem}
+.tc-name{
+  font-size:13px;font-weight:700;color:var(--ink);
+  letter-spacing:-.3px;flex:1;line-height:1.3;
+}
+.tc-desc{
+  font-size:12px;color:var(--ink3);line-height:1.65;
+  margin-bottom:.8rem;flex:1;
+}
+.tc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:.8rem}
+.tc-tag-i{
+  border:1px solid var(--sand3);border-radius:100px;
+  padding:2px 8px;font-size:10px;color:var(--warm2);
+}
+.tc-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:.7rem;border-top:1px solid var(--sand3);margin-top:auto;
+}
+.tc-fl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--warm2)}
+.sd{width:6px;height:6px;border-radius:50%;background:var(--sand3)}
+.sd.on{background:var(--ink)}
+.empty-state{
+  text-align:center;padding:3rem 1rem;
+  color:var(--warm2);font-size:13px;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .tools-grid{grid-template-columns:1fr 1fr}
+  .tc.feat{grid-column:span 2}
+}
+@media(max-width:768px){
+  .shell{grid-template-columns:1fr}
+  .sb{display:none}
+  .sector-grid{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+}
+@media(max-width:480px){
+  .sector-grid{grid-template-columns:1fr}
+  .tools-grid{grid-template-columns:1fr}
+  .tc.feat{grid-column:span 1}
+  .sh-stats{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html">laize<em>.ai</em></a>
+  <div class="nav-links">
+    <a class="nl" href="index.html">Explore</a>
+    <a class="nl on" href="sectors.html">Sectors</a>
+    <a class="nl" href="#">What's new</a>
+    <a class="nl" href="#">Learn</a>
+    <a class="nl" href="#">Compare</a>
+  </div>
+  <div class="nav-r">
+    <span class="nav-user">Alex M.</span>
+    <button class="pill">Dashboard</button>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sb" id="sidebar"></aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────
+const SECTORS = [
+  { id:'marketing',  icon:'📈', name:'Marketing',   count:218, sub:'Content, SEO, ads, social, email' },
+  { id:'design',     icon:'🎨', name:'Design',       count:201, sub:'Images, video, UI, branding' },
+  { id:'healthcare', icon:'🩺', name:'Healthcare',   count:142, sub:'Clinical, imaging, documentation' },
+  { id:'finance',    icon:'💰', name:'Finance',      count:163, sub:'Analytics, risk, forecasting' },
+  { id:'legal',      icon:'⚖️', name:'Legal',        count:97,  sub:'Contracts, research, drafting' },
+  { id:'education',  icon:'🎓', name:'Education',    count:186, sub:'Tutoring, courses, research' },
+  { id:'engineering',icon:'💻', name:'Engineering',  count:175, sub:'Code, DevOps, APIs' },
+  { id:'hr',         icon:'🏢', name:'HR & People',  count:88,  sub:'Recruiting, onboarding, culture' },
+  { id:'sales',      icon:'🤝', name:'Sales',        count:112, sub:'CRM, outreach, forecasting' },
+  { id:'ops',        icon:'⚙️', name:'Operations',   count:68,  sub:'Automation, workflows, ops' },
+  { id:'security',   icon:'🔒', name:'Security',     count:76,  sub:'Threat detection, compliance' },
+  { id:'analytics',  icon:'📊', name:'Analytics',    count:94,  sub:'BI, dashboards, data ops' },
+];
+
+const TOOLS = {
+  marketing: [
+    { name:'Jasper AI',      logo:'J', bg:'#c8622a', desc:'Writes ads, emails, blogs, and campaigns in your brand voice. The most popular AI writing tool for marketing teams worldwide.',           tags:['Copywriting','Email','Ads'],    pricing:'Paid',      skill:2, hot:true,  feat:true },
+    { name:'Surfer SEO',     logo:'S', bg:'#5a7d6a', desc:'Score and optimise content against top-ranking pages in real time. Integrates with Google Docs and WordPress.',                          tags:['SEO','Content'],               pricing:'Paid',      skill:2 },
+    { name:'Buffer AI',      logo:'B', bg:'#2a8a7a', desc:'Plan, write, and schedule social content across all platforms with optimal timing suggestions.',                                          tags:['Social','Scheduling'],         pricing:'Free tier', skill:1 },
+    { name:'Gamma',          logo:'G', bg:'#c87838', desc:'Turn a prompt into a stunning presentation in seconds. No design skills needed.',                                                          tags:['Slides','Pitch'],              pricing:'Free tier', skill:1, isNew:true },
+    { name:'Adcreative.ai',  logo:'A', bg:'#7b5ea8', desc:'Generate high-performing ad creatives trained on billions of converting ads across all major platforms.',                                  tags:['Ads','Creative'],              pricing:'Paid',      skill:1 },
+    { name:'Clearscope',     logo:'C', bg:'#3b6ea8', desc:'Analyse search intent and grade your content in real time for better rankings.',                                                           tags:['SEO','Content'],               pricing:'Paid',      skill:2 },
+    { name:'Beehiiv AI',     logo:'B', bg:'#6a3b8a', desc:'Write, grow, and monetise your newsletter with AI writing and audience insights.',                                                         tags:['Email','Newsletter'],          pricing:'Free tier', skill:1, isNew:true },
+    { name:'Klaviyo AI',     logo:'K', bg:'#3b5fa8', desc:'Personalise every email and SMS at scale. Predicts when and what to send each customer for maximum revenue.',                             tags:['Email','SMS'],                 pricing:'Free tier', skill:2 },
+    { name:'Heygen',         logo:'H', bg:'#a85a2a', desc:'Create AI video avatars and marketing videos from text scripts. No camera or studio needed.',                                             tags:['Video','Avatar'],              pricing:'Free tier', skill:1 },
+  ],
+  design: [
+    { name:'Midjourney',     logo:'M', bg:'#7b6fbd', desc:'The industry standard for AI image generation. Create stunning artwork and product visuals from text prompts.',                           tags:['Image Gen','Art'],             pricing:'Paid',      skill:2, hot:true, feat:true },
+    { name:'Figma AI',       logo:'F', bg:'#e87050', desc:'Generate UI components, rewrite copy, and auto-layout designs directly inside Figma.',                                                    tags:['UI','Components'],             pricing:'Free tier', skill:2 },
+    { name:'Framer AI',      logo:'F', bg:'#5a3d8a', desc:'Describe your website and Framer builds it — responsive layouts, published in one click.',                                               tags:['Web','No-code'],               pricing:'Free tier', skill:1, isNew:true },
+    { name:'Runway',         logo:'R', bg:'#c84878', desc:'Generate, edit, and transform video with AI. The go-to tool for filmmakers and creative agencies.',                                       tags:['Video','Film'],                pricing:'Paid',      skill:3 },
+    { name:'Adobe Firefly',  logo:'A', bg:'#e85030', desc:'Generative AI built into Photoshop and Illustrator. Commercial-safe image generation trained on licensed content.',                      tags:['Image','Adobe'],               pricing:'Free tier', skill:2 },
+    { name:'Canva AI',       logo:'C', bg:'#8a3b6a', desc:'Magic Write, Text to Image, AI backgrounds — professional design accessible to everyone.',                                               tags:['Design','Social'],             pricing:'Free tier', skill:1 },
+    { name:'Looka',          logo:'L', bg:'#2a6a8a', desc:'Generate logos, colour palettes, and full brand kits in minutes. Trusted by 2M+ businesses.',                                            tags:['Logo','Branding'],             pricing:'Paid',      skill:1 },
+    { name:'Pika',           logo:'P', bg:'#4a6a3b', desc:'Turn text prompts and still images into cinematic video clips in seconds.',                                                               tags:['Video','Text-to-video'],       pricing:'Free tier', skill:1, isNew:true },
+  ],
+  healthcare: [
+    { name:'Nuance DAX',     logo:'N', bg:'#2a6a4a', desc:'Ambient AI that listens to patient conversations and auto-generates clinical notes, saving physicians 3+ hours per day.',                tags:['Documentation','EHR'],         pricing:'Paid',      skill:1, hot:true, feat:true },
+    { name:'Nabla Copilot',  logo:'N', bg:'#3b5a8a', desc:'Real-time AI medical scribe. Transcribes consultations and structures SOAP notes automatically.',                                        tags:['Scribe','Notes'],              pricing:'Free tier', skill:1, isNew:true },
+    { name:'Ambra Health',   logo:'A', bg:'#5a3b8a', desc:'Cloud platform for managing and analysing DICOM imaging data across hospitals and radiology groups.',                                    tags:['Imaging','Radiology'],         pricing:'Paid',      skill:3 },
+    { name:'PathAI',         logo:'P', bg:'#8a3b2a', desc:'Deep learning models that help pathologists detect cancer in tissue samples with greater accuracy.',                                      tags:['Pathology','Oncology'],        pricing:'Paid',      skill:3 },
+    { name:'Suki AI',        logo:'S', bg:'#2a7a6a', desc:'Voice-powered AI that completes clinical notes and orders hands-free so clinicians can focus on patients.',                              tags:['Voice','Documentation'],       pricing:'Paid',      skill:1 },
+    { name:'Viz.ai',         logo:'V', bg:'#6a4a2a', desc:'Real-time AI that detects stroke on imaging and instantly alerts the care team.',                                                         tags:['Diagnostics','Stroke'],        pricing:'Paid',      skill:2 },
+  ],
+  finance: [
+    { name:'Kensho',         logo:'K', bg:'#2a4e8a', desc:'Surfaces insights from earnings calls, SEC filings, and market events. Used by S&P Global and major banks.',                            tags:['Analytics','Research'],        pricing:'Paid',      skill:2, hot:true, feat:true },
+    { name:'Ramp AI',        logo:'R', bg:'#3b8a5a', desc:'Automatically categorises expenses and suggests savings using AI trained on billions in company spend.',                                  tags:['Expenses','Finance ops'],      pricing:'Free tier', skill:1, isNew:true },
+    { name:'Domo AI',        logo:'D', bg:'#8a5a2a', desc:'Natural language queries on your financial data. Ask questions, get instant visual answers.',                                            tags:['BI','Analytics'],              pricing:'Paid',      skill:2 },
+    { name:'Quantexa',       logo:'Q', bg:'#2a6a8a', desc:'Decision intelligence that detects financial crime and reduces risk across the enterprise.',                                              tags:['Risk','Fraud'],                pricing:'Paid',      skill:3 },
+    { name:'Stampli',        logo:'S', bg:'#5a3b8a', desc:'AI that automates invoice processing and coding with near-zero manual work.',                                                             tags:['AP','Invoices'],               pricing:'Paid',      skill:1 },
+    { name:'Workiva AI',     logo:'W', bg:'#6a2a4a', desc:'Automates ESG, audit, and financial reporting with AI linking data across your entire reporting chain.',                                  tags:['Reporting','ESG'],             pricing:'Paid',      skill:2 },
+  ],
+  legal: [
+    { name:'Harvey AI',      logo:'H', bg:'#3b5a8a', desc:'Built on GPT-4 and trained on legal data. Drafts contracts and researches case law for top law firms worldwide.',                        tags:['Contracts','Research'],        pricing:'Paid',      skill:2, hot:true, feat:true },
+    { name:'Ironclad AI',    logo:'I', bg:'#5a3b2a', desc:'Automates the entire contract lifecycle from drafting and negotiation to signature and renewal.',                                         tags:['Contracts','CLM'],             pricing:'Paid',      skill:2 },
+    { name:'Spellbook',      logo:'S', bg:'#2a6a5a', desc:'AI inside Microsoft Word that drafts, reviews, and redlines contracts using your preferred language.',                                   tags:['Drafting','Word'],             pricing:'Paid',      skill:1, isNew:true },
+    { name:'Casetext',       logo:'C', bg:'#6a4a2a', desc:'Automates legal research, deposition prep, and contract review for litigation teams.',                                                   tags:['Research','Litigation'],       pricing:'Paid',      skill:2 },
+  ],
+  education: [
+    { name:'Khanmigo',       logo:'K', bg:'#2a6a8a', desc:'Socratic AI tutor that guides students through problems step-by-step without just giving the answer. Free for students.',               tags:['Tutoring','K-12'],             pricing:'Free tier', skill:1, hot:true, feat:true },
+    { name:'Synthesis Tutor',logo:'S', bg:'#8a4a2a', desc:'Adaptive AI tutor for maths originally built for SpaceX employees\' children. Now open to all.',                                        tags:['Maths','Tutoring'],            pricing:'Paid',      skill:1 },
+    { name:'Coursera Coach', logo:'C', bg:'#3b8a5a', desc:'Built into every Coursera course — answers questions and gives personalised progress feedback.',                                         tags:['Learning','Courses'],          pricing:'Free tier', skill:1, isNew:true },
+    { name:'Gradescope',     logo:'G', bg:'#5a3b8a', desc:'AI grading that learns rubrics and applies them consistently across thousands of student submissions.',                                  tags:['Grading','Assessment'],        pricing:'Paid',      skill:2 },
+    { name:'Elicit',         logo:'E', bg:'#2a5a6a', desc:'AI that searches and summarises academic papers to accelerate literature reviews and research.',                                          tags:['Research','Papers'],           pricing:'Free tier', skill:2 },
+  ],
+  engineering: [
+    { name:'GitHub Copilot', logo:'G', bg:'#2a2a3a', desc:'The most widely used AI coding assistant. Autocompletes code, suggests functions, and writes tests inside your IDE.',                   tags:['Code','IDE'],                  pricing:'Paid',      skill:2, hot:true, feat:true },
+    { name:'Cursor',         logo:'C', bg:'#3b5fa8', desc:'VS Code fork with Claude and GPT-4 built in. Chat with your codebase, edit with natural language.',                                     tags:['Editor','Code'],               pricing:'Free tier', skill:2, isNew:true },
+    { name:'Vercel v0',      logo:'V', bg:'#0f0d0a', desc:'Generate full React UI components from text descriptions. Deploy to Vercel in seconds.',                                                 tags:['UI','React'],                  pricing:'Free tier', skill:1 },
+    { name:'Devin',          logo:'D', bg:'#5a3d8a', desc:'Fully autonomous AI engineer that plans, writes, debugs, and deploys complete software projects.',                                       tags:['Autonomous','Agent'],          pricing:'Paid',      skill:3 },
+    { name:'Tabnine',        logo:'T', bg:'#2a6a5a', desc:'Privacy-first AI code completion that runs on-prem. Supports 80+ languages and all major IDEs.',                                        tags:['Code','Privacy'],              pricing:'Free tier', skill:2 },
+  ],
+  hr: [
+    { name:'Workday AI',     logo:'W', bg:'#3b5a8a', desc:'Skills intelligence, workforce planning, and people analytics in the most widely used enterprise HR platform.',                          tags:['HRIS','Analytics'],            pricing:'Paid',      skill:2, feat:true, hot:true },
+    { name:'Paradox Olivia', logo:'P', bg:'#8a4a2a', desc:'AI assistant that screens candidates, schedules interviews, and answers applicants 24/7 via chat.',                                     tags:['Recruiting','Screening'],      pricing:'Paid',      skill:1 },
+    { name:'Leena AI',       logo:'L', bg:'#2a6a4a', desc:'Zero-ticket HR helpdesk. Employees get instant answers on policies, payroll, and benefits.',                                            tags:['Employee exp'],                pricing:'Paid',      skill:1, isNew:true },
+    { name:'Eightfold AI',   logo:'E', bg:'#5a2a6a', desc:'Matches candidates to roles and identifies internal mobility with deep learning talent intelligence.',                                   tags:['Talent','Bias reduction'],     pricing:'Paid',      skill:2 },
+  ],
+  sales: [
+    { name:'Gong',           logo:'G', bg:'#c87838', desc:'Revenue intelligence that analyses sales calls, surfaces deal risks, and coaches reps in real time.',                                    tags:['Calls','Forecasting'],         pricing:'Paid',      skill:2, hot:true, feat:true },
+    { name:'Apollo AI',      logo:'A', bg:'#3b5fa8', desc:'Find leads and write personalised outreach across 270M+ contacts with AI.',                                                              tags:['Prospecting','Outreach'],      pricing:'Free tier', skill:1, isNew:true },
+    { name:'Clari',          logo:'C', bg:'#5a3b8a', desc:'AI forecasting and pipeline management that shows exactly where your deals will land.',                                                  tags:['Forecasting','Pipeline'],      pricing:'Paid',      skill:2 },
+    { name:'Lavender',       logo:'L', bg:'#2a6a5a', desc:'AI email coach that scores your outreach in real time and suggests improvements.',                                                       tags:['Email','Outreach'],            pricing:'Free tier', skill:1 },
+  ],
+  ops: [
+    { name:'Zapier AI',      logo:'Z', bg:'#e85030', desc:'Build automation workflows from natural language. Connects 6,000+ apps with no code.',                                                   tags:['Automation','No-code'],        pricing:'Free tier', skill:1, hot:true, feat:true },
+    { name:'Make AI',        logo:'M', bg:'#7b5ea8', desc:'Visual automation platform with AI scenario builder for more complex workflows.',                                                        tags:['Automation','Visual'],         pricing:'Free tier', skill:2 },
+    { name:'Notion AI',      logo:'N', bg:'#2a2a2a', desc:'AI writing, summarisation, and Q&A built directly into your Notion workspace.',                                                         tags:['Productivity','Docs'],         pricing:'Free tier', skill:1, isNew:true },
+    { name:'ClickUp AI',     logo:'C', bg:'#7c3aed', desc:'AI task management that summarises docs and writes updates automatically.',                                                              tags:['Project mgmt','Tasks'],        pricing:'Free tier', skill:1 },
+  ],
+  security: [
+    { name:'Darktrace',      logo:'D', bg:'#2a3b5a', desc:'AI cybersecurity that detects and responds to threats autonomously across your entire network.',                                         tags:['Threat detection','SOC'],      pricing:'Paid',      skill:3, hot:true, feat:true },
+    { name:'Vectra AI',      logo:'V', bg:'#5a2a2a', desc:'AI-driven network detection that stops ransomware and insider threats before damage occurs.',                                            tags:['Network','EDR'],               pricing:'Paid',      skill:3 },
+    { name:'Orca Security',  logo:'O', bg:'#2a6a4a', desc:'Agentless cloud security that uses AI to prioritise the risks that matter most.',                                                        tags:['Cloud','CSPM'],                pricing:'Paid',      skill:2, isNew:true },
+  ],
+  analytics: [
+    { name:'Tableau AI',     logo:'T', bg:'#e87050', desc:'Natural language analytics built into Tableau. Ask questions in plain English, get instant dashboards.',                                 tags:['BI','Dashboards'],             pricing:'Paid',      skill:2, hot:true, feat:true },
+    { name:'Power BI Copilot',logo:'P',bg:'#0078d4', desc:'Microsoft AI in Power BI generates reports, writes DAX, and summarises data stories for you.',                                          tags:['BI','Microsoft'],              pricing:'Paid',      skill:2 },
+    { name:'Hex',            logo:'H', bg:'#5a3b8a', desc:'AI data notebook that writes SQL and Python and creates charts from natural language.',                                                  tags:['SQL','Notebooks'],             pricing:'Free tier', skill:2, isNew:true },
+    { name:'Fivetran',       logo:'F', bg:'#2a6a8a', desc:'Automated data pipelines with AI-assisted schema mapping and anomaly detection.',                                                        tags:['ETL','Pipelines'],             pricing:'Paid',      skill:3 },
+  ],
+};
+
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+let view = 'picker';
+let activeSector = null;
+let filters = { pricing:'all', skill:'all', type:'all', usecase:'all', search:'' };
+let openDD = null;
+
+// ─────────────────────────────────────────
+// DROPDOWN
+// ─────────────────────────────────────────
+function closeAllDD() {
+  document.querySelectorAll('.dd-menu').forEach(m => m.remove());
+  document.querySelectorAll('.dd-trigger').forEach(t => t.classList.remove('open'));
+  openDD = null;
+}
+
+function toggleDD(id) {
+  if (openDD === id) { closeAllDD(); return; }
+  closeAllDD();
+  openDD = id;
+
+  const trigger = document.getElementById('dd-' + id);
+  trigger.classList.add('open');
+
+  const tools = TOOLS[activeSector] || [];
+  let html = '';
+
+  if (id === 'pricing') {
+    html = `<div class="dd-menu-header">Pricing</div>
+      ${[['all','All pricing'],['Free tier','Free tier only'],['Paid','Paid only']].map(([v,l]) =>
+        `<div class="dd-option ${filters.pricing===v?'on':''}" onclick="setF('pricing','${v}')">${l}</div>`
+      ).join('')}`;
+  }
+  if (id === 'skill') {
+    html = `<div class="dd-menu-header">Skill level</div>
+      ${[['all','All levels'],['1','Beginner'],['2','Intermediate'],['3','Advanced']].map(([v,l]) =>
+        `<div class="dd-option ${filters.skill===v?'on':''}" onclick="setF('skill','${v}')">${l}</div>`
+      ).join('')}`;
+  }
+  if (id === 'type') {
+    const newC = tools.filter(t => t.isNew).length;
+    const hotC = tools.filter(t => t.hot).length;
+    html = `<div class="dd-menu-header">Show</div>
+      <div class="dd-option ${filters.type==='all'?'on':''}" onclick="setF('type','all')">All tools</div>
+      <div class="dd-divider"></div>
+      <div class="dd-option ${filters.type==='new'?'on':''}" onclick="setF('type','new')">
+        New this week <span class="dd-option-count">${newC}</span>
+      </div>
+      <div class="dd-option ${filters.type==='hot'?'on':''}" onclick="setF('type','hot')">
+        Trending <span class="dd-option-count">${hotC}</span>
+      </div>`;
+  }
+  if (id === 'usecase') {
+    const allTags = [...new Set(tools.flatMap(t => t.tags))];
+    html = `<div class="dd-menu-header">Use case</div>
+      <div class="dd-option ${filters.usecase==='all'?'on':''}" onclick="setF('usecase','all')">All use cases</div>
+      <div class="dd-divider"></div>
+      ${allTags.map(tag => {
+        const c = tools.filter(t => t.tags.includes(tag)).length;
+        return `<div class="dd-option ${filters.usecase===tag?'on':''}" onclick="setF('usecase','${tag}')">
+          ${tag} <span class="dd-option-count">${c}</span>
+        </div>`;
+      }).join('')}`;
+  }
+
+  const menu = document.createElement('div');
+  menu.className = 'dd-menu';
+  menu.innerHTML = html;
+  trigger.parentNode.appendChild(menu);
+
+  setTimeout(() => {
+    document.addEventListener('click', function handler(e) {
+      if (!trigger.contains(e.target) && !menu.contains(e.target)) {
+        closeAllDD();
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 0);
+}
+
+function setF(key, val) {
+  filters[key] = val;
+  closeAllDD();
+  renderTools();
+}
+
+function getLabel(key) {
+  const map = {
+    pricing: { all:'Pricing', 'Free tier':'Free tier', Paid:'Paid only' },
+    skill:   { all:'Skill level', '1':'Beginner', '2':'Intermediate', '3':'Advanced' },
+    type:    { all:'Show', new:'New this week', hot:'Trending' },
+    usecase: { all:'Use case' },
+  };
+  return (map[key] && map[key][filters[key]]) || filters[key];
+}
+
+function hasVal(key) {
+  return filters[key] && filters[key] !== 'all';
+}
+
+function removeFilter(key) {
+  filters[key] = 'all';
+  renderTools();
+}
+
+// ─────────────────────────────────────────
+// SIDEBAR
+// ─────────────────────────────────────────
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  if (view === 'picker') {
+    sb.innerHTML = `
+      <div class="sb-logo">laize<em>.ai</em></div>
+      <a class="snav" href="index.html"><div class="snavdot"></div>Explore</a>
+      <a class="snav on" href="sectors.html"><div class="snavdot"></div>Sectors</a>
+      <a class="snav" href="#"><div class="snavdot"></div>What's new</a>
+      <a class="snav" href="#"><div class="snavdot"></div>Compare</a>
+      <a class="snav" href="#"><div class="snavdot"></div>Learn</a>
+      <div class="sb-foot">
+        <div class="suser">
+          <div class="sav">AM</div>
+          <div><div class="sun">Alex M.</div><div class="sur">Marketer</div></div>
+        </div>
+      </div>`;
+  } else {
+    const s = SECTORS.find(s => s.id === activeSector);
+    sb.innerHTML = `
+      <div class="sb-logo">laize<em>.ai</em></div>
+      <div class="sb-back" onclick="goBack()">← All sectors</div>
+      <div class="sb-sector-title">${s.icon} ${s.name}</div>
+      <div class="sb-divider"></div>
+      <a class="snav" href="index.html"><div class="snavdot"></div>Explore</a>
+      <a class="snav on" href="sectors.html"><div class="snavdot"></div>Sectors</a>
+      <a class="snav" href="#"><div class="snavdot"></div>What's new</a>
+      <a class="snav" href="#"><div class="snavdot"></div>Compare</a>
+      <a class="snav" href="#"><div class="snavdot"></div>Learn</a>
+      <div class="sb-foot">
+        <div class="suser">
+          <div class="sav">AM</div>
+          <div><div class="sun">Alex M.</div><div class="sur">Marketer</div></div>
+        </div>
+      </div>`;
+  }
+}
+
+// ─────────────────────────────────────────
+// PICKER VIEW
+// ─────────────────────────────────────────
+function renderPicker() {
+  document.getElementById('main').innerHTML = `
+    <div class="sec-lbl" style="margin-bottom:6px">Explore by industry</div>
+    <div class="picker-h1">Which sector are you <em>working in?</em></div>
+    <div class="picker-sub">Choose a sector to explore AI tools curated for your industry.</div>
+    <div class="picker-search">
+      <span style="color:var(--warm);font-size:15px">⌕</span>
+      <input type="text" placeholder="Search sectors..." oninput="filterSectors(this.value)"/>
+    </div>
+    <div class="sector-grid" id="sector-grid">
+      ${SECTORS.map(s => `
+        <div class="sector-card" onclick="openSector('${s.id}')">
+          <span class="sc-icon">${s.icon}</span>
+          <div class="sc-name">${s.name}</div>
+          <div class="sc-count">${s.count} tools</div>
+          <div class="sc-bg">${s.count}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function filterSectors(q) {
+  document.querySelectorAll('.sector-card').forEach((c, i) => {
+    c.style.display = SECTORS[i].name.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function openSector(id) {
+  activeSector = id;
+  view = 'tools';
+  filters = { pricing:'all', skill:'all', type:'all', usecase:'all', search:'' };
+  renderSidebar();
+  renderTools();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function goBack() {
+  view = 'picker';
+  activeSector = null;
+  filters = { pricing:'all', skill:'all', type:'all', usecase:'all', search:'' };
+  renderSidebar();
+  renderPicker();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ─────────────────────────────────────────
+// TOOLS VIEW
+// ─────────────────────────────────────────
+function renderTools() {
+  const s = SECTORS.find(s => s.id === activeSector);
+  let tools = [...(TOOLS[activeSector] || [])];
+  const total = tools.length;
+
+  if (filters.pricing !== 'all') tools = tools.filter(t => t.pricing === filters.pricing);
+  if (filters.skill === '1') tools = tools.filter(t => t.skill === 1);
+  if (filters.skill === '2') tools = tools.filter(t => t.skill === 2);
+  if (filters.skill === '3') tools = tools.filter(t => t.skill === 3);
+  if (filters.type === 'new') tools = tools.filter(t => t.isNew);
+  if (filters.type === 'hot') tools = tools.filter(t => t.hot);
+  if (filters.usecase && filters.usecase !== 'all') tools = tools.filter(t => t.tags.includes(filters.usecase));
+  if (filters.search) {
+    const q = filters.search.toLowerCase();
+    tools = tools.filter(t => t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
+  }
+
+  const freeC = (TOOLS[activeSector] || []).filter(t => t.pricing === 'Free tier').length;
+  const newC  = (TOOLS[activeSector] || []).filter(t => t.isNew).length;
+
+  const activeChips = ['pricing','skill','type','usecase']
+    .filter(k => hasVal(k))
+    .map(k => `
+      <div class="active-chip">
+        ${getLabel(k)}
+        <span class="active-chip-x" onclick="removeFilter('${k}')">×</span>
+      </div>`)
+    .join('');
+
+  document.getElementById('main').innerHTML = `
+    <div class="sector-header">
+      <div>
+        <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(245,240,232,.3);margin-bottom:3px">Sector</div>
+        <div class="sh-title">${s.icon} ${s.name} AI</div>
+        <div class="sh-sub">${s.sub}</div>
+      </div>
+      <div class="sh-stats">
+        <div><div class="sh-sn">${s.count}</div><div class="sh-sl">Total</div></div>
+        <div><div class="sh-sn">${freeC}</div><div class="sh-sl">Free tier</div></div>
+        <div><div class="sh-sn">${newC}</div><div class="sh-sl">New</div></div>
+      </div>
+      <button class="sh-back" onclick="goBack()">← All sectors</button>
+    </div>
+
+    <div class="filterbar">
+      <div class="filter-search">
+        <span style="color:var(--warm);font-size:14px;flex-shrink:0">⌕</span>
+        <input
+          type="text"
+          placeholder="Search tools…"
+          value="${filters.search || ''}"
+          oninput="filters.search=this.value;renderTools()"
+        />
+      </div>
+
+      <div class="dd-wrap">
+        <div class="dd-trigger ${hasVal('pricing')?'has-val':''}" id="dd-pricing" onclick="toggleDD('pricing')">
+          ${hasVal('pricing') ? '<div class="dd-dot"></div>' : ''}
+          ${getLabel('pricing')} <span class="dd-arrow">▾</span>
+        </div>
+      </div>
+
+      <div class="dd-wrap">
+        <div class="dd-trigger ${hasVal('skill')?'has-val':''}" id="dd-skill" onclick="toggleDD('skill')">
+          ${hasVal('skill') ? '<div class="dd-dot"></div>' : ''}
+          ${getLabel('skill')} <span class="dd-arrow">▾</span>
+        </div>
+      </div>
+
+      <div class="dd-wrap">
+        <div class="dd-trigger ${hasVal('type')?'has-val':''}" id="dd-type" onclick="toggleDD('type')">
+          ${hasVal('type') ? '<div class="dd-dot"></div>' : ''}
+          ${getLabel('type')} <span class="dd-arrow">▾</span>
+        </div>
+      </div>
+
+      <div class="dd-wrap">
+        <div class="dd-trigger ${hasVal('usecase')?'has-val':''}" id="dd-usecase" onclick="toggleDD('usecase')">
+          ${hasVal('usecase') ? '<div class="dd-dot"></div>' : ''}
+          ${getLabel('usecase')} <span class="dd-arrow">▾</span>
+        </div>
+      </div>
+
+      <span class="result-c">${tools.length} of ${total}</span>
+    </div>
+
+    ${activeChips ? `<div class="active-chips">${activeChips}</div>` : ''}
+
+    ${tools.length === 0
+      ? '<div class="empty-state">No tools match these filters. Try adjusting your selection.</div>'
+      : `<div class="tools-grid">
+          ${tools.map(t => `
+            <div class="tc ${t.feat ? 'feat' : ''}">
+              <div class="tc-logo" style="background:${t.bg}">${t.logo}</div>
+              <div class="tc-top">
+                <div class="tc-name">${t.name}</div>
+                ${t.isNew ? '<span class="bdg bdg-new">New</span>' : ''}
+                ${t.hot && !t.isNew ? '<span class="bdg bdg-hot">Hot</span>' : ''}
+              </div>
+              <div class="tc-desc">${t.desc}</div>
+              <div class="tc-tags">
+                ${t.tags.map(tag => `<span class="tc-tag-i">${tag}</span>`).join('')}
+              </div>
+              <div class="tc-foot">
+                <span class="tc-fl">${t.pricing}</span>
+                <div style="display:flex;gap:3px">
+                  <div class="sd ${t.skill >= 1 ? 'on' : ''}"></div>
+                  <div class="sd ${t.skill >= 2 ? 'on' : ''}"></div>
+                  <div class="sd ${t.skill >= 3 ? 'on' : ''}"></div>
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>`
+    }`;
+}
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+renderSidebar();
+renderPicker();
+</script>
+
+</body>
+</html>
