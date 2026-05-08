@@ -4,24 +4,27 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>laize.ai — Find the AI that fits your world</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --ink:#0f0d0a;--ink2:#2a2620;--ink3:#3d3830;
+  --ink:#0f0d0a;--ink2:#1a1714;--ink3:#2e2a26;
   --sand:#f5f0e8;--sand2:#ede6d8;--sand3:#e2d8c8;--sand4:#c8bca8;
   --warm:#c8a882;--warm2:#a8845a;
   --sage2:#5a7d6a;--sage3:#d8e8dc;
   --rust:#c85a38;--rust2:#e87850;--rust3:#f5e0d8;
-  --clay2:#e8c89a;
-  --cream:#faf8f4;--r:12px;
+  --clay2:#e8c89a;--cream:#faf8f4;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  background:var(--sand2);
-  font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:var(--cream);
+  font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;
   color:var(--ink);line-height:1.5;font-size:14px;
   -webkit-font-smoothing:antialiased;min-height:100vh;
+  overflow-x:hidden;
 }
 
 .screen{display:none}
@@ -30,224 +33,354 @@ body{
 
 /* ── NAV ── */
 .nav{
-  background:var(--ink);height:50px;
+  background:var(--ink);height:52px;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 1.5rem;position:sticky;top:0;z-index:99;
+  padding:0 2rem;position:sticky;top:0;z-index:99;
+  border-bottom:1px solid rgba(245,240,232,.06);
 }
 .logo{
-  font-family:Georgia,serif;font-size:17px;font-weight:700;
+  font-family:'Space Mono',monospace;font-size:16px;font-weight:700;
   color:var(--sand);letter-spacing:-.5px;text-decoration:none;
+  display:flex;align-items:center;gap:7px;
 }
-.logo em{font-style:italic;color:var(--clay2)}
-.nav-links{display:flex;gap:1.5rem;list-style:none}
+.logo-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--rust);flex-shrink:0;
+  animation:blink 3s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.nav-links{display:flex;gap:0;list-style:none}
 .nav-links a{
-  font-size:12px;color:rgba(245,240,232,.4);
-  text-decoration:none;transition:color .2s;cursor:pointer;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(245,240,232,.35);padding:0 1.1rem;height:52px;
+  display:flex;align-items:center;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .25s;text-decoration:none;
 }
-.nav-links a:hover,.nav-links a.on{color:var(--sand)}
+.nav-links a:hover{color:var(--sand)}
+.nav-links a.on{color:var(--sand);border-bottom-color:var(--rust)}
 .nav-r{display:flex;gap:8px;align-items:center}
-.nav-user{font-size:11px;color:rgba(245,240,232,.35)}
+.nav-user{font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,240,232,.3);letter-spacing:.08em}
 .pill{
-  background:var(--rust);color:#fff;border:none;
-  border-radius:100px;padding:7px 18px;font-size:12px;
-  font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;
+  font-family:'Space Mono',monospace;background:var(--rust);color:#fff;border:none;
+  padding:7px 16px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
 }
-.pill:hover{background:var(--rust2)}
-.pill.ghost{
-  background:transparent;
-  border:1.5px solid rgba(245,240,232,.18);
-  color:rgba(245,240,232,.6);
-}
-.pill.ghost:hover{border-color:rgba(245,240,232,.45);color:var(--sand)}
-.pill.sm{padding:6px 13px;font-size:11px}
+.pill:hover{background:var(--rust2);transform:translateY(-1px)}
+.pill.ghost{background:transparent;border:1px solid rgba(245,240,232,.2);color:rgba(245,240,232,.55)}
+.pill.ghost:hover{border-color:rgba(245,240,232,.5);color:var(--sand)}
+.pill.sm{padding:6px 13px;font-size:10px}
 
 /* ── BUTTONS ── */
-.btn-ink{
-  background:var(--ink);color:var(--sand);border:none;
-  border-radius:100px;padding:11px 24px;font-size:13px;
-  font-weight:600;cursor:pointer;transition:all .2s;
+.btn-primary{
+  font-family:'Space Mono',monospace;background:var(--ink);color:var(--sand);border:none;
+  padding:14px 28px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
 }
-.btn-ink:hover{background:var(--ink2)}
-.btn-out{
-  background:transparent;color:var(--ink2);
-  border:1.5px solid var(--sand4);border-radius:100px;
-  padding:10px 20px;font-size:13px;cursor:pointer;transition:all .2s;
+.btn-primary:hover{background:var(--rust);transform:translateY(-2px)}
+.btn-secondary{
+  font-family:'Space Mono',monospace;background:transparent;color:var(--ink);
+  border:1px solid var(--ink);padding:14px 28px;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;
 }
-.btn-out:hover{border-color:var(--ink2)}
+.btn-secondary:hover{background:var(--ink);color:var(--sand)}
 
 /* ── BADGES ── */
-.bdg{border-radius:100px;padding:3px 9px;font-size:10px;font-weight:600}
+.bdg{padding:3px 9px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em}
 .bdg-free{background:var(--sage3);color:var(--sage2)}
 .bdg-paid{background:var(--rust3);color:var(--rust)}
 .bdg-level{background:var(--sand3);color:var(--warm2)}
 
-/* ── LANDING ── */
-.b-hero{
+/* ════════════════════════════
+   SCREEN B — LANDING
+════════════════════════════ */
+.hero{
   display:grid;grid-template-columns:1fr 1fr;
-  min-height:calc(100vh - 50px - 96px - 52px);
+  min-height:calc(100vh - 52px - 80px - 52px);
 }
-.b-left{
-  padding:3rem 2.5rem;display:flex;flex-direction:column;
-  justify-content:center;border-right:1px solid var(--sand3);
-  background:var(--cream);
+.hero-left{
+  background:var(--cream);padding:4rem 3rem 3rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  border-right:1px solid var(--sand3);position:relative;overflow:hidden;
 }
-.b-eye{
-  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--warm2);margin-bottom:1.25rem;
-  display:flex;align-items:center;gap:10px;
+.hero-eyebrow{
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--warm2);
+  display:flex;align-items:center;gap:12px;
 }
-.b-eye::before{content:'';width:22px;height:1px;background:var(--warm2);flex-shrink:0}
-.b-h1{
-  font-family:Georgia,serif;
-  font-size:clamp(30px,4vw,50px);font-weight:700;
-  letter-spacing:-2px;line-height:1;color:var(--ink);margin-bottom:1.25rem;
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--warm2)}
+.hero-num{
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:rgba(15,13,10,.15);letter-spacing:.08em;
+  position:absolute;top:2rem;right:2rem;
 }
-.b-h1 em{font-style:italic;color:var(--rust)}
-.b-sub{font-size:14px;color:var(--ink3);line-height:1.8;max-width:320px;margin-bottom:1.75rem}
-.b-acts{display:flex;gap:8px}
-.b-right{background:var(--ink2);display:grid;grid-template-columns:1fr 1fr}
-.b-stat{
-  padding:1.75rem 1.5rem;
-  border-right:1px solid rgba(245,240,232,.07);
-  border-bottom:1px solid rgba(245,240,232,.07);
+.hero-h1{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(52px,7vw,88px);font-weight:700;
+  letter-spacing:-4px;line-height:.92;color:var(--ink);margin:2rem 0;
 }
-.b-stat:nth-child(2){border-right:none}
-.b-stat:nth-child(3){border-bottom:none}
-.b-stat:nth-child(4){border-right:none;border-bottom:none}
-.b-sn{font-family:Georgia,serif;font-size:34px;font-weight:700;color:var(--sand);letter-spacing:-2px;line-height:1}
-.b-sl{font-size:10px;color:rgba(245,240,232,.28);text-transform:uppercase;letter-spacing:.12em;margin-top:5px}
-.b-secs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--cream);border-top:1px solid var(--sand3)}
-.b-sec{padding:1rem 1.5rem;border-right:1px solid var(--sand3);cursor:pointer;transition:background .2s}
-.b-sec:last-child{border-right:none}
-.b-sec:hover{background:var(--sand)}
-.b-sec-l{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--warm2);margin-bottom:4px}
-.b-sec-n{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:2px}
-.b-sec-c{font-size:11px;color:var(--warm);font-family:Georgia,serif;font-style:italic}
-.b-bar{
+.hero-h1 em{font-style:normal;color:var(--rust);display:block}
+.hero-h1 .small{font-size:clamp(28px,4vw,48px);color:var(--warm2);letter-spacing:-2px}
+.hero-sub{font-size:15px;color:var(--ink3);line-height:1.75;max-width:340px;margin-bottom:2.5rem;opacity:.7}
+.hero-acts{display:flex;gap:0}
+.vert-label{
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(15,13,10,.12);writing-mode:vertical-rl;text-orientation:mixed;
+  position:absolute;right:1.5rem;bottom:3rem;
+}
+.hero-right{display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr}
+.hb{
+  padding:1.75rem;border-right:1px solid var(--sand3);border-bottom:1px solid var(--sand3);
+  position:relative;overflow:hidden;transition:all .3s;cursor:pointer;
+}
+.hb:nth-child(2){border-right:none}
+.hb:nth-child(3){border-bottom:none}
+.hb:nth-child(4){border-right:none;border-bottom:none}
+.hb:hover{transform:scale(1.01)}
+.hb-ink{background:var(--ink)}
+.hb-rust{background:var(--rust)}
+.hb-sage{background:var(--sage3)}
+.hb-sand{background:var(--sand2)}
+.hb-num{font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:700;line-height:1;letter-spacing:-3px}
+.hb-ink .hb-num{color:var(--sand)}
+.hb-rust .hb-num{color:#fff}
+.hb-sage .hb-num{color:var(--sage2)}
+.hb-sand .hb-num{color:var(--ink)}
+.hb-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;margin-top:6px}
+.hb-ink .hb-label{color:rgba(245,240,232,.4)}
+.hb-rust .hb-label{color:rgba(255,255,255,.6)}
+.hb-sage .hb-label{color:var(--sage2)}
+.hb-sand .hb-label{color:var(--warm2)}
+.hb-geo{position:absolute;right:-20px;bottom:-20px;width:100px;height:100px;border-radius:50%;opacity:.12}
+.hb-ink .hb-geo{background:var(--sand)}
+.hb-rust .hb-geo{background:#fff}
+.hb-sage .hb-geo{background:var(--sage2)}
+.hb-sand .hb-geo{background:var(--warm2)}
+
+.sector-strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--sand3)}
+.ss-item{
+  padding:1.25rem 1.5rem;border-right:1px solid var(--sand3);
+  cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
+}
+.ss-item:last-child{border-right:none}
+.ss-item::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--rust);transform:scaleX(0);transform-origin:left;transition:transform .3s;
+}
+.ss-item:hover::after{transform:scaleX(1)}
+.ss-item:hover{background:var(--sand)}
+.ss-tag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--warm2);margin-bottom:6px}
+.ss-name{font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
+.ss-count{font-family:'Space Mono',monospace;font-size:11px;color:var(--warm2);margin-top:3px}
+
+.trend-bar{
   background:var(--sand);border-top:1px solid var(--sand3);
-  padding:.85rem 1.5rem;display:flex;align-items:center;gap:.85rem;overflow-x:auto;
+  padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;overflow-x:auto;
 }
-.b-bar-l{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--warm2);font-weight:600;white-space:nowrap}
-.b-chip{
-  background:var(--cream);border:1px solid var(--sand3);border-radius:9px;
-  padding:7px 12px;display:flex;align-items:center;gap:8px;
+.trend-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--warm2);white-space:nowrap;flex-shrink:0}
+.trend-chip{
+  display:flex;align-items:center;gap:9px;padding:8px 14px;
+  border:1px solid var(--sand3);background:var(--cream);
   cursor:pointer;transition:all .2s;flex-shrink:0;text-decoration:none;
 }
-.b-chip:hover{border-color:var(--warm);background:#fff}
-.tlogo{width:26px;height:26px;border-radius:6px;font-size:11px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.tn{font-size:12px;font-weight:700;color:var(--ink)}
-.tc{font-size:10px;color:var(--warm2)}
+.trend-chip:hover{border-color:var(--ink);background:#fff;transform:translateY(-1px)}
+.tc-logo{width:24px;height:24px;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tc-n{font-size:12px;font-weight:600;color:var(--ink)}
+.tc-c{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.06em}
 
-/* ── ONBOARDING ── */
-.trail{display:flex;align-items:center;padding:.85rem 1.5rem;background:var(--sand);border-bottom:1px solid var(--sand3)}
-.ts{display:flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--sand4)}
-.ts.done{color:var(--sage2)}.ts.active{color:var(--ink)}
-.td{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;transition:all .3s}
-.ts.done .td{background:var(--sage2);border-color:var(--sage2);color:#fff}
-.ts.active .td{background:var(--ink);border-color:var(--ink);color:var(--sand)}
-.tl{flex:1;height:1px;background:var(--sand3);margin:0 7px;max-width:40px;transition:background .3s}
+/* ════════════════════════════
+   SCREEN OB — ONBOARDING
+════════════════════════════ */
+.trail{
+  display:flex;align-items:center;padding:.85rem 2rem;
+  background:var(--ink);border-bottom:1px solid rgba(245,240,232,.08);
+}
+.ts{
+  display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+  color:rgba(245,240,232,.25);
+}
+.ts.done{color:var(--sage2)}
+.ts.active{color:var(--sand)}
+.td{
+  width:22px;height:22px;border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;font-size:9px;
+  flex-shrink:0;transition:all .3s;
+}
+.ts.done .td{background:var(--sage2);border-color:var(--sage2);color:var(--ink)}
+.ts.active .td{background:var(--sand);border-color:var(--sand);color:var(--ink)}
+.tl{flex:1;height:1px;background:rgba(245,240,232,.1);margin:0 8px;max-width:48px;transition:background .3s}
 .tl.done{background:var(--sage2)}
-.ob-wrap{background:var(--cream);min-height:calc(100vh - 100px);display:flex;align-items:center;justify-content:center;padding:2.5rem 1.5rem}
-.ob-in{width:100%;max-width:520px}
-.ob-sl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--warm2);margin-bottom:1.25rem;text-align:center}
-.ob-h{font-family:Georgia,serif;font-size:26px;font-weight:700;letter-spacing:-1px;color:var(--ink);text-align:center;margin-bottom:.4rem}
-.ob-h em{font-style:italic;color:var(--rust)}
-.ob-sub{font-size:13px;color:var(--warm2);text-align:center;margin-bottom:2rem}
-.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:1.75rem}
-.ob-card{background:var(--sand);border:1.5px solid var(--sand3);border-radius:var(--r);padding:1.1rem 1rem;cursor:pointer;transition:all .2s;text-align:center;user-select:none}
-.ob-card:hover{border-color:var(--warm);background:var(--cream)}
+.ob-wrap{
+  background:var(--cream);min-height:calc(100vh - 100px);
+  display:flex;align-items:center;justify-content:center;padding:3rem 2rem;
+}
+.ob-in{width:100%;max-width:560px}
+.ob-sl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--warm2);margin-bottom:1.5rem;text-align:center}
+.ob-h{
+  font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,40px);font-weight:700;
+  letter-spacing:-1.5px;line-height:1;color:var(--ink);text-align:center;margin-bottom:.5rem;
+}
+.ob-h em{font-style:normal;color:var(--rust)}
+.ob-sub{font-size:13px;color:var(--warm2);text-align:center;margin-bottom:2rem;line-height:1.7}
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:2rem}
+.ob-card{
+  background:var(--sand);border:1px solid var(--sand3);
+  padding:1.25rem 1rem;cursor:pointer;transition:all .2s;text-align:center;user-select:none;
+}
+.ob-card:hover{border-color:var(--ink);background:var(--cream);transform:translateY(-2px)}
 .ob-card.picked{border-color:var(--ink);background:var(--ink)}
 .ob-card.picked .ob-ct{color:var(--sand)}
 .ob-card.picked .ob-cs{color:rgba(245,240,232,.4)}
-.ob-ci{font-size:22px;margin-bottom:7px}
-.ob-ct{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px;letter-spacing:-.3px}
-.ob-cs{font-size:11px;color:var(--warm2)}
+.ob-ci{font-size:22px;margin-bottom:8px}
+.ob-ct{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;letter-spacing:-.3px}
+.ob-cs{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.06em}
 .ob-foot{display:flex;justify-content:space-between;align-items:center}
-.ob-skip{font-size:11px;color:var(--warm2);cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
-.ob-skip:hover{color:var(--ink2)}
-.ob-btn{background:var(--ink);color:var(--sand);border:none;border-radius:100px;padding:11px 28px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;opacity:.32;pointer-events:none}
+.ob-skip{
+  font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);cursor:pointer;
+  text-transform:uppercase;letter-spacing:.1em;text-decoration:underline;text-underline-offset:3px;
+  transition:color .2s;
+}
+.ob-skip:hover{color:var(--ink)}
+.ob-btn{
+  font-family:'Space Mono',monospace;background:var(--ink);color:var(--sand);border:none;
+  padding:12px 28px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;opacity:.32;pointer-events:none;
+}
 .ob-btn.ready{opacity:1;pointer-events:all}
-.ob-btn.ready:hover{background:var(--ink2)}
+.ob-btn.ready:hover{background:var(--rust)}
 
-/* ── SHARED SHELL ── */
-.shell{display:grid;grid-template-columns:186px 1fr;min-height:calc(100vh - 50px);background:var(--cream)}
-.sb{background:var(--ink);padding:1.35rem 1.1rem;display:flex;flex-direction:column;gap:3px;position:sticky;top:50px;height:calc(100vh - 50px);overflow-y:auto}
-.sb-logo{font-family:Georgia,serif;font-size:16px;font-weight:700;color:var(--sand);letter-spacing:-.5px;padding-bottom:1.1rem;border-bottom:1px solid rgba(245,240,232,.08);margin-bottom:.65rem}
-.sb-logo em{font-style:italic;color:var(--clay2)}
-.snav{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:12px;color:rgba(245,240,232,.42);cursor:pointer;transition:all .2s;text-decoration:none}
-.snav:hover,.snav.on{background:rgba(245,240,232,.08);color:var(--sand)}
-.sdot{width:5px;height:5px;border-radius:50%;background:var(--rust);flex-shrink:0;opacity:0;transition:opacity .2s}
+/* ════════════════════════════
+   SHARED SHELL (A + C)
+════════════════════════════ */
+.shell{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 52px);background:var(--cream)}
+.sb{
+  background:var(--ink);padding:1.5rem 1.1rem;
+  display:flex;flex-direction:column;gap:2px;
+  position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;
+}
+.sb-logo{
+  font-family:'Space Mono',monospace;font-size:15px;font-weight:700;
+  color:var(--sand);letter-spacing:-.5px;padding-bottom:1.1rem;
+  border-bottom:1px solid rgba(245,240,232,.08);margin-bottom:.75rem;
+  display:flex;align-items:center;gap:7px;
+}
+.sb-logo-dot{width:6px;height:6px;border-radius:50%;background:var(--rust);flex-shrink:0}
+.snav{
+  display:flex;align-items:center;gap:9px;padding:9px 10px;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;
+  color:rgba(245,240,232,.38);cursor:pointer;transition:all .2s;text-decoration:none;
+}
+.snav:hover,.snav.on{background:rgba(245,240,232,.07);color:var(--sand)}
+.sdot{width:4px;height:4px;background:var(--rust);flex-shrink:0;opacity:0;transition:opacity .2s}
 .snav.on .sdot{opacity:1}
-.slbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.2);margin:.9rem 0 .3rem 10px;font-weight:600}
-.sitm{padding:6px 10px;border-radius:7px;font-size:11px;color:rgba(245,240,232,.35);cursor:pointer;transition:all .2s}
-.sitm:hover{background:rgba(245,240,232,.06);color:rgba(245,240,232,.62)}
-.sitm.muted{color:rgba(245,240,232,.16)}
+.slbl{
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(245,240,232,.18);margin:.9rem 0 .3rem 10px;
+}
+.sitm{
+  padding:7px 10px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;
+  color:rgba(245,240,232,.32);cursor:pointer;transition:all .2s;text-decoration:none;display:block;
+}
+.sitm:hover{background:rgba(245,240,232,.06);color:rgba(245,240,232,.6)}
+.sitm.muted{color:rgba(245,240,232,.14)}
 .sb-foot{margin-top:auto;padding-top:.85rem;border-top:1px solid rgba(245,240,232,.07)}
-.suser{display:flex;align-items:center;gap:8px}
-.sav{width:28px;height:28px;border-radius:50%;background:var(--rust3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--rust);flex-shrink:0}
-.sun{font-size:11px;font-weight:600;color:rgba(245,240,232,.52)}
-.sur{font-size:10px;color:rgba(245,240,232,.22)}
-.main{padding:1.5rem;overflow:hidden}
-.sec-lbl{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--warm2);font-weight:600}
+.suser{display:flex;align-items:center;gap:9px}
+.sav{
+  width:28px;height:28px;background:var(--rust3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--rust);flex-shrink:0;
+}
+.sun{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:rgba(245,240,232,.5)}
+.sur{font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.2);letter-spacing:.06em}
+.main{padding:2rem;overflow:hidden}
+.sec-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--warm2);font-weight:700}
 
 /* ── SCREEN A ── */
-.welcome{background:var(--ink);border-radius:var(--r);padding:1.35rem;margin-bottom:1.1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
-.wh{font-family:Georgia,serif;font-size:19px;font-weight:700;color:var(--sand);letter-spacing:-.5px;margin-bottom:3px}
-.wh em{font-style:italic;color:var(--clay2)}
-.ws{font-size:12px;color:rgba(245,240,232,.38)}
-.wbdg{background:rgba(200,90,56,.22);border:1px solid rgba(200,90,56,.32);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--rust2);white-space:nowrap;flex-shrink:0}
-.stat-row{display:grid;gap:9px;margin-bottom:1.1rem}
-.sc{background:var(--sand);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem;cursor:pointer;transition:all .2s}
-.sc:hover{border-color:var(--warm);background:var(--cream);transform:translateY(-2px)}
-.sc-l{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--warm2);margin-bottom:.5rem;font-weight:600}
-.sc-v{font-family:Georgia,serif;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-1px;line-height:1}
-.sc-s{font-size:11px;color:var(--warm2);margin-top:3px}
-.tool-list{display:flex;flex-direction:column;gap:7px;margin-top:.65rem}
-.ti-row{background:var(--sand);border:1px solid var(--sand3);border-radius:var(--r);padding:.8rem 1rem;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s}
-.ti-row:hover{border-color:var(--warm);background:var(--cream)}
-.tl32{width:32px;height:32px;border-radius:8px;font-size:13px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ti-n{font-size:13px;font-weight:700;color:var(--ink)}
-.ti-c{font-size:11px;color:var(--warm2)}
+.welcome{
+  background:var(--ink);padding:2rem;margin-bottom:1.25rem;
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  position:relative;overflow:hidden;
+}
+.welcome::before{
+  content:'laize';position:absolute;right:-10px;bottom:-20px;
+  font-family:'Space Grotesk',sans-serif;font-size:100px;font-weight:700;
+  letter-spacing:-6px;color:rgba(245,240,232,.04);line-height:1;pointer-events:none;
+}
+.wh{
+  font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;
+  color:var(--sand);letter-spacing:-.8px;margin-bottom:4px;
+}
+.wh em{font-style:normal;color:var(--clay2)}
+.ws{font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,240,232,.35);letter-spacing:.06em}
+.wbdg{
+  font-family:'Space Mono',monospace;background:rgba(200,90,56,.18);
+  border:1px solid rgba(200,90,56,.3);padding:6px 14px;font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--rust2);white-space:nowrap;flex-shrink:0;
+}
+.stat-row{display:grid;gap:8px;margin-bottom:1.25rem}
+.sc{
+  background:var(--sand);border:1px solid var(--sand3);
+  padding:1.1rem;cursor:pointer;transition:all .2s;
+}
+.sc:hover{border-color:var(--ink);transform:translateY(-2px)}
+.sc-l{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm2);margin-bottom:.6rem}
+.sc-v{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-1.5px;line-height:1}
+.sc-s{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);margin-top:4px;letter-spacing:.04em}
+.tool-list{display:flex;flex-direction:column;gap:6px;margin-top:.75rem}
+.ti-row{
+  background:var(--sand);border:1px solid var(--sand3);
+  padding:.85rem 1rem;display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:all .2s;
+}
+.ti-row:hover{border-color:var(--ink);background:var(--cream);transform:translateX(4px)}
+.tl32{width:32px;height:32px;font-size:13px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ti-n{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
+.ti-c{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.06em;margin-top:2px}
 .ti-row .bdg{margin-left:auto}
 
 /* ── SCREEN C ── */
-.panel{background:var(--sand);border:1px solid var(--sand3);border-radius:var(--r);padding:1rem}
-.pl{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--warm2);margin-bottom:.85rem;font-weight:600}
-.sl-row{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.panel{background:var(--sand);border:1px solid var(--sand3);padding:1.1rem}
+.pl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm2);margin-bottom:1rem}
+.sl-row{display:flex;align-items:center;gap:9px;margin-bottom:8px}
 .sl-row:last-child{margin-bottom:0}
-.sl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.sl-n{font-size:13px;font-weight:600;color:var(--ink);flex:1}
-.sl-c{font-size:11px;color:var(--warm2)}
-.pr-item{margin-bottom:9px}
+.sl-dot{width:6px;height:6px;flex-shrink:0}
+.sl-n{font-size:13px;font-weight:600;color:var(--ink);flex:1;letter-spacing:-.3px}
+.sl-c{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2)}
+.pr-item{margin-bottom:10px}
 .pr-item:last-child{margin-bottom:0}
-.pr-head{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:4px;font-weight:500}
-.pr-pct{font-size:10px;color:var(--warm2)}
+.pr-head{display:flex;justify-content:space-between;font-size:12px;color:var(--ink);margin-bottom:5px;font-weight:500}
+.pr-pct{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2)}
 .pr-pct.done{color:var(--sage2)}
-.pr-track{background:var(--sand3);border-radius:100px;height:3.5px;overflow:hidden}
-.pr-fill{height:100%;border-radius:100px;background:var(--ink);transition:width .5s}
+.pr-track{background:var(--sand3);height:3px;overflow:hidden}
+.pr-fill{height:100%;background:var(--ink);transition:width .5s}
 .pr-fill.r{background:var(--rust)}
-.continue{margin-top:.85rem;background:var(--rust3);border-radius:8px;padding:.6rem .85rem;font-size:11px;color:var(--rust);font-weight:600;cursor:pointer;transition:background .2s}
-.continue:hover{background:#eecfc5}
-.tcard{background:var(--sand);border:1px solid var(--sand3);border-radius:var(--r);padding:.9rem;cursor:pointer;transition:all .2s}
-.tcard:hover{border-color:var(--warm);background:var(--cream);transform:translateY(-2px)}
-.tcard-h{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.tcard-n{font-size:13px;font-weight:700;color:var(--ink)}
-.tcard-c{font-size:11px;color:var(--warm2);margin-bottom:7px}
+.continue-btn{
+  margin-top:1rem;background:var(--rust3);padding:.65rem .9rem;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--rust);font-weight:700;cursor:pointer;transition:background .2s;
+  display:flex;align-items:center;gap:6px;
+}
+.continue-btn:hover{background:#eecfc5}
+.tcard{background:var(--sand);border:1px solid var(--sand3);padding:.9rem;cursor:pointer;transition:all .2s}
+.tcard:hover{border-color:var(--ink);transform:translateY(-2px)}
+.tcard-h{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.tcard-n{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
+.tcard-c{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.06em;margin-bottom:8px}
 .tcard-f{display:flex;gap:5px;flex-wrap:wrap}
 
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
-  .b-hero{grid-template-columns:1fr}
-  .b-right{grid-template-columns:1fr 1fr;min-height:auto}
-  .b-secs{grid-template-columns:1fr 1fr}
+  .hero{grid-template-columns:1fr}
+  .hero-right{grid-template-columns:1fr 1fr;min-height:auto}
+  .sector-strip{grid-template-columns:1fr 1fr}
   .shell{grid-template-columns:1fr}
   .sb{display:none}
   .nav-links{display:none}
   .ob-grid{grid-template-columns:1fr}
 }
 @media(max-width:480px){
-  .b-right{grid-template-columns:1fr}
-  .b-secs{grid-template-columns:1fr}
+  .hero-right{grid-template-columns:1fr}
+  .sector-strip{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -259,7 +392,7 @@ body{
 ══════════════════════════════ -->
 <div class="screen active" id="sc-b">
   <nav class="nav">
-    <a class="logo" href="index.html">laize<em>.ai</em></a>
+    <a class="logo" href="index.html"><div class="logo-dot"></div>laize.ai</a>
     <ul class="nav-links">
       <li><a href="index.html" class="on">Explore</a></li>
       <li><a href="sectors.html">Sectors</a></li>
@@ -269,42 +402,84 @@ body{
     </ul>
     <div class="nav-r">
       <button class="pill ghost sm" onclick="go('sc-ob')">Log in</button>
-      <button class="pill" onclick="go('sc-ob')">Create account</button>
+      <button class="pill" onclick="go('sc-ob')">Get started</button>
     </div>
   </nav>
 
-  <div class="b-hero">
-    <div class="b-left">
-      <div class="b-eye">AI discovery platform</div>
-      <h1 class="b-h1">Find the AI<br>that fits<br><em>your world</em></h1>
-      <p class="b-sub">2,400+ tools mapped by industry, skill level, and use case. Stop searching. Start using.</p>
-      <div class="b-acts">
-        <button class="btn-ink" onclick="go('sc-ob')">Get started — free</button>
-        <button class="btn-out" onclick="window.location.href='sectors.html'">Browse tools</button>
+  <div class="hero">
+    <div class="hero-left">
+      <div>
+        <div class="hero-eyebrow">AI discovery platform · 2026</div>
+        <div class="hero-num">01 / 04</div>
+      </div>
+      <div>
+        <h1 class="hero-h1">
+          Find<br>the AI<br>
+          <em>that fits</em><br>
+          <span class="small">your world</span>
+        </h1>
+        <p class="hero-sub">2,400+ tools mapped by industry, skill level, and use case. Stop searching. Start using.</p>
+        <div class="hero-acts">
+          <button class="btn-primary" onclick="go('sc-ob')">Get started — free</button>
+          <button class="btn-secondary" onclick="window.location.href='sectors.html'">Browse sectors</button>
+        </div>
+      </div>
+      <div class="vert-label">laize · AI discovery · 2026</div>
+    </div>
+    <div class="hero-right">
+      <div class="hb hb-ink" onclick="window.location.href='sectors.html'">
+        <div class="hb-num">2,4k</div>
+        <div class="hb-label">AI tools indexed</div>
+        <div class="hb-geo"></div>
+      </div>
+      <div class="hb hb-rust" onclick="window.location.href='sectors.html'">
+        <div class="hb-num">18</div>
+        <div class="hb-label">Industry sectors</div>
+        <div class="hb-geo"></div>
+      </div>
+      <div class="hb hb-sage" onclick="go('sc-ob')">
+        <div class="hb-num">94k</div>
+        <div class="hb-label">Learners this month</div>
+        <div class="hb-geo"></div>
+      </div>
+      <div class="hb hb-sand">
+        <div class="hb-num">4.8</div>
+        <div class="hb-label">Avg tool rating</div>
+        <div class="hb-geo"></div>
       </div>
     </div>
-    <div class="b-right">
-      <div class="b-stat"><div class="b-sn">2,400</div><div class="b-sl">AI tools indexed</div></div>
-      <div class="b-stat"><div class="b-sn">18</div><div class="b-sl">Industry sectors</div></div>
-      <div class="b-stat"><div class="b-sn">94k</div><div class="b-sl">Learners this month</div></div>
-      <div class="b-stat"><div class="b-sn">4.8</div><div class="b-sl">Avg tool rating</div></div>
+  </div>
+
+  <div class="sector-strip">
+    <div class="ss-item" onclick="window.location.href='sectors.html'">
+      <div class="ss-tag">Healthcare</div>
+      <div class="ss-name">Medical AI</div>
+      <div class="ss-count">142 tools</div>
+    </div>
+    <div class="ss-item" onclick="window.location.href='sectors.html'">
+      <div class="ss-tag">Marketing</div>
+      <div class="ss-name">Growth AI</div>
+      <div class="ss-count">218 tools</div>
+    </div>
+    <div class="ss-item" onclick="window.location.href='sectors.html'">
+      <div class="ss-tag">Finance</div>
+      <div class="ss-name">FinTech AI</div>
+      <div class="ss-count">163 tools</div>
+    </div>
+    <div class="ss-item" onclick="window.location.href='sectors.html'">
+      <div class="ss-tag">Design</div>
+      <div class="ss-name">Creative AI</div>
+      <div class="ss-count">201 tools</div>
     </div>
   </div>
 
-  <div class="b-secs">
-    <div class="b-sec" onclick="window.location.href='sectors.html'"><div class="b-sec-l">Healthcare</div><div class="b-sec-n">Medical AI</div><div class="b-sec-c">142 tools</div></div>
-    <div class="b-sec" onclick="window.location.href='sectors.html'"><div class="b-sec-l">Marketing</div><div class="b-sec-n">Growth AI</div><div class="b-sec-c">218 tools</div></div>
-    <div class="b-sec" onclick="window.location.href='sectors.html'"><div class="b-sec-l">Finance</div><div class="b-sec-n">FinTech AI</div><div class="b-sec-c">163 tools</div></div>
-    <div class="b-sec" onclick="window.location.href='sectors.html'"><div class="b-sec-l">Design</div><div class="b-sec-n">Creative AI</div><div class="b-sec-c">201 tools</div></div>
-  </div>
-
-  <div class="b-bar">
-    <div class="b-bar-l">Trending now</div>
-    <a class="b-chip" href="sectors.html"><div class="tlogo" style="background:#c8622a">J</div><div><div class="tn">Jasper AI</div><div class="tc">Copywriting</div></div></a>
-    <a class="b-chip" href="sectors.html"><div class="tlogo" style="background:#7b6fbd">M</div><div><div class="tn">Midjourney</div><div class="tc">Image gen</div></div></a>
-    <a class="b-chip" href="sectors.html"><div class="tlogo" style="background:#5a7d6a">S</div><div><div class="tn">Surfer SEO</div><div class="tc">SEO</div></div></a>
-    <a class="b-chip" href="sectors.html"><div class="tlogo" style="background:#2a8a7a">B</div><div><div class="tn">Buffer AI</div><div class="tc">Social</div></div></a>
-    <a class="b-chip" href="sectors.html"><div class="tlogo" style="background:#c87838">G</div><div><div class="tn">Gamma</div><div class="tc">Slides</div></div></a>
+  <div class="trend-bar">
+    <div class="trend-label">Trending now —</div>
+    <a class="trend-chip" href="sectors.html"><div class="tc-logo" style="background:#c8622a">J</div><div><div class="tc-n">Jasper AI</div><div class="tc-c">Copywriting</div></div></a>
+    <a class="trend-chip" href="sectors.html"><div class="tc-logo" style="background:#7b6fbd">M</div><div><div class="tc-n">Midjourney</div><div class="tc-c">Image gen</div></div></a>
+    <a class="trend-chip" href="sectors.html"><div class="tc-logo" style="background:#5a7d6a">S</div><div><div class="tc-n">Surfer SEO</div><div class="tc-c">SEO</div></div></a>
+    <a class="trend-chip" href="sectors.html"><div class="tc-logo" style="background:#2a8a7a">B</div><div><div class="tc-n">Buffer AI</div><div class="tc-c">Social</div></div></a>
+    <a class="trend-chip" href="sectors.html"><div class="tc-logo" style="background:#c87838">G</div><div><div class="tc-n">Gamma</div><div class="tc-c">Slides</div></div></a>
   </div>
 </div>
 
@@ -314,7 +489,7 @@ body{
 ══════════════════════════════ -->
 <div class="screen" id="sc-ob">
   <nav class="nav">
-    <a class="logo" href="index.html">laize<em>.ai</em></a>
+    <a class="logo" href="index.html"><div class="logo-dot"></div>laize.ai</a>
     <button class="pill ghost sm" onclick="go('sc-b')">← Back</button>
   </nav>
 
@@ -329,19 +504,17 @@ body{
   </div>
 
   <div class="ob-wrap">
-
-    <!-- Step 1: Role -->
     <div class="ob-in" id="ob-s1">
-      <div class="ob-sl">Step 1 of 2</div>
+      <div class="ob-sl">Step 01 / 02</div>
       <h2 class="ob-h">What best describes <em>you?</em></h2>
-      <p class="ob-sub">We'll personalise your recommendations and learning path.</p>
+      <p class="ob-sub">We'll personalise your tool recommendations and learning path.</p>
       <div class="ob-grid">
-        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">📈</div><div class="ob-ct">Marketer</div><div class="ob-cs">Content, SEO, ads, growth</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">📈</div><div class="ob-ct">Marketer</div><div class="ob-cs">Content, SEO, ads</div></div>
         <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🎨</div><div class="ob-ct">Designer</div><div class="ob-cs">Visual, product, creative</div></div>
         <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">💻</div><div class="ob-ct">Developer</div><div class="ob-cs">Code, APIs, automation</div></div>
         <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🏢</div><div class="ob-ct">Founder</div><div class="ob-cs">Strategy, ops, product</div></div>
-        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🎓</div><div class="ob-ct">Student</div><div class="ob-cs">Learning, research, study</div></div>
-        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🩺</div><div class="ob-ct">Healthcare</div><div class="ob-cs">Clinical, research, admin</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🎓</div><div class="ob-ct">Student</div><div class="ob-cs">Learning, research</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🩺</div><div class="ob-ct">Healthcare</div><div class="ob-cs">Clinical, research</div></div>
       </div>
       <div class="ob-foot">
         <span class="ob-skip" onclick="goStep2()">Skip for now</span>
@@ -349,9 +522,8 @@ body{
       </div>
     </div>
 
-    <!-- Step 2: Sector -->
     <div class="ob-in hidden" id="ob-s2">
-      <div class="ob-sl">Step 2 of 2</div>
+      <div class="ob-sl">Step 02 / 02</div>
       <h2 class="ob-h">Pick your first <em>sector</em></h2>
       <p class="ob-sub">You can always add more later.</p>
       <div class="ob-grid">
@@ -367,7 +539,6 @@ body{
         <button class="ob-btn" id="ob-b2" onclick="go('sc-a')">Enter laize →</button>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -377,7 +548,7 @@ body{
 ══════════════════════════════ -->
 <div class="screen" id="sc-a">
   <nav class="nav">
-    <a class="logo" href="index.html">laize<em>.ai</em></a>
+    <a class="logo" href="index.html"><div class="logo-dot"></div>laize.ai</a>
     <ul class="nav-links">
       <li><a href="index.html" class="on">Explore</a></li>
       <li><a href="sectors.html">Sectors</a></li>
@@ -387,17 +558,17 @@ body{
     </ul>
     <div class="nav-r">
       <span class="nav-user">Alex M.</span>
-      <button class="pill" onclick="go('sc-c')">My dashboard →</button>
+      <button class="pill" onclick="go('sc-c')">Dashboard →</button>
     </div>
   </nav>
 
   <div class="shell">
     <aside class="sb">
-      <div class="sb-logo">laize<em>.ai</em></div>
-      <a class="snav on"  href="index.html">  <div class="sdot"></div>Explore</a>
-      <a class="snav"     href="sectors.html"><div class="sdot"></div>Sectors</a>
-      <a class="snav"     href="compare.html"><div class="sdot"></div>Compare</a>
-      <a class="snav"     href="learn.html">  <div class="sdot"></div>Learn</a>
+      <div class="sb-logo"><div class="sb-logo-dot"></div>laize.ai</div>
+      <a class="snav on"  href="index.html">   <div class="sdot"></div>Explore</a>
+      <a class="snav"     href="sectors.html"> <div class="sdot"></div>Sectors</a>
+      <a class="snav"     href="compare.html"> <div class="sdot"></div>Compare</a>
+      <a class="snav"     href="learn.html">   <div class="sdot"></div>Learn</a>
       <div class="slbl">Your sectors</div>
       <a class="sitm" href="sectors.html">Marketing</a>
       <a class="sitm" href="sectors.html">Design</a>
@@ -432,7 +603,7 @@ body{
         </div>
       </div>
 
-      <div class="sec-lbl" style="margin-bottom:.65rem">Recommended for marketers</div>
+      <div class="sec-lbl" style="margin-bottom:.75rem">Recommended for marketers</div>
       <div class="tool-list">
         <div class="ti-row" onclick="window.location.href='sectors.html'">
           <div class="tl32" style="background:#c8622a">J</div>
@@ -460,13 +631,13 @@ body{
 ══════════════════════════════ -->
 <div class="screen" id="sc-c">
   <nav class="nav">
-    <a class="logo" href="index.html">laize<em>.ai</em></a>
+    <a class="logo" href="index.html"><div class="logo-dot"></div>laize.ai</a>
     <ul class="nav-links">
       <li><a href="index.html">Explore</a></li>
       <li><a href="sectors.html">Sectors</a></li>
       <li><a href="whats-new.html">What's new</a></li>
       <li><a href="learn.html">Learn</a></li>
-      <li><a href="compare.html">Compare</a></li>
+      <li><a href="compare.html" class="on">Dashboard</a></li>
     </ul>
     <div class="nav-r">
       <span class="nav-user">Alex M.</span>
@@ -476,12 +647,12 @@ body{
 
   <div class="shell">
     <aside class="sb">
-      <div class="sb-logo">laize<em>.ai</em></div>
-      <a class="snav"     href="index.html">  <div class="sdot"></div>Explore</a>
-      <a class="snav"     href="sectors.html"><div class="sdot"></div>Sectors</a>
-      <a class="snav"     href="compare.html"><div class="sdot"></div>Compare</a>
-      <a class="snav"     href="learn.html">  <div class="sdot"></div>Learn</a>
-      <a class="snav on"  href="#"><div class="sdot"></div>Dashboard</a>
+      <div class="sb-logo"><div class="sb-logo-dot"></div>laize.ai</div>
+      <a class="snav"     href="index.html">   <div class="sdot"></div>Explore</a>
+      <a class="snav"     href="sectors.html"> <div class="sdot"></div>Sectors</a>
+      <a class="snav"     href="compare.html"> <div class="sdot"></div>Compare</a>
+      <a class="snav"     href="learn.html">   <div class="sdot"></div>Learn</a>
+      <a class="snav on"  href="#">             <div class="sdot"></div>Dashboard</a>
       <div class="slbl">Your sectors</div>
       <a class="sitm" href="sectors.html">Marketing</a>
       <a class="sitm" href="sectors.html">Design</a>
@@ -495,7 +666,7 @@ body{
     </aside>
 
     <main class="main">
-      <div class="sec-lbl" style="margin-bottom:1rem">Your overview</div>
+      <div class="sec-lbl" style="margin-bottom:1.1rem">Your overview</div>
 
       <div class="stat-row" style="grid-template-columns:repeat(3,1fr)">
         <div class="sc"><div class="sc-l">Tools saved</div><div class="sc-v">12</div><div class="sc-s">across 2 sectors</div></div>
@@ -503,7 +674,7 @@ body{
         <div class="sc"><div class="sc-l">Streak</div><div class="sc-v">6d</div><div class="sc-s">Keep it going</div></div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:1.1rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem">
         <div class="panel">
           <div class="pl">Top sectors for you</div>
           <div class="sl-row"><div class="sl-dot" style="background:#c85a38"></div><div class="sl-n">Marketing</div><div class="sl-c">218 tools</div></div>
@@ -529,12 +700,12 @@ body{
             <div class="pr-head"><span>Campaign automation</span><span class="pr-pct">0%</span></div>
             <div class="pr-track"><div class="pr-fill" style="width:0%"></div></div>
           </div>
-          <div class="continue" onclick="window.location.href='learn.html'">Continue: AI copywriting →</div>
+          <div class="continue-btn" onclick="window.location.href='learn.html'">Continue: AI copywriting →</div>
         </div>
       </div>
 
-      <div class="sec-lbl" style="margin-bottom:.65rem">Saved tools</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+      <div class="sec-lbl" style="margin-bottom:.75rem">Saved tools</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
         <div class="tcard" onclick="window.location.href='sectors.html'">
           <div class="tcard-h"><div class="tl32" style="background:#c8622a">J</div><div class="tcard-n">Jasper AI</div></div>
           <div class="tcard-c">Marketing · Copywriting</div>
@@ -562,13 +733,11 @@ function go(id) {
   document.getElementById(id).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 function pick(el, btnId) {
   el.closest('.ob-in').querySelectorAll('.ob-card').forEach(c => c.classList.remove('picked'));
   el.classList.add('picked');
   document.getElementById(btnId).classList.add('ready');
 }
-
 function goStep2() {
   document.getElementById('ob-s1').classList.add('hidden');
   document.getElementById('ob-s2').classList.remove('hidden');
@@ -578,7 +747,6 @@ function goStep2() {
   document.getElementById('tr3').className = 'ts active';
   document.getElementById('tl2').classList.add('done');
 }
-
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') go('sc-b');
 });
