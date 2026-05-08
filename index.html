@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>laize.ai — Find the AI that fits your world</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0d0a;--ink2:#2a2620;--ink3:#3d3830;
+  --sand:#f5f0e8;--sand2:#ede6d8;--sand3:#e2d8c8;--sand4:#c8bca8;
+  --warm:#c8a882;--warm2:#a8845a;
+  --sage2:#5a7d6a;--sage3:#d8e8dc;
+  --rust:#c85a38;--rust2:#e87850;--rust3:#f5e0d8;
+  --clay2:#e8c89a;
+  --cream:#faf8f4;--r:12px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--sand2);
+  font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+  color:var(--ink);line-height:1.5;font-size:14px;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+}
+
+/* ── SCREEN ROUTING ── */
+.screen{display:none}
+.screen.active{display:block}
+.hidden{display:none!important}
+
+/* ── NAV ── */
+.nav{
+  background:var(--ink);height:50px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;position:sticky;top:0;z-index:99;
+}
+.logo{
+  font-family:Georgia,serif;font-size:17px;font-weight:700;
+  color:var(--sand);letter-spacing:-.5px;text-decoration:none;
+}
+.logo em{font-style:italic;color:var(--clay2)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{
+  font-size:12px;color:rgba(245,240,232,.4);
+  text-decoration:none;transition:color .2s;cursor:pointer;
+}
+.nav-links a:hover,.nav-links a.on{color:var(--sand)}
+.nav-r{display:flex;gap:8px;align-items:center}
+.nav-user{font-size:11px;color:rgba(245,240,232,.35)}
+.pill{
+  background:var(--rust);color:#fff;border:none;
+  border-radius:100px;padding:7px 18px;font-size:12px;
+  font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.pill:hover{background:var(--rust2)}
+.pill.ghost{
+  background:transparent;
+  border:1.5px solid rgba(245,240,232,.18);
+  color:rgba(245,240,232,.6);
+}
+.pill.ghost:hover{border-color:rgba(245,240,232,.45);color:var(--sand)}
+.pill.sm{padding:6px 13px;font-size:11px}
+
+/* ── BUTTONS ── */
+.btn-ink{
+  background:var(--ink);color:var(--sand);border:none;
+  border-radius:100px;padding:11px 24px;font-size:13px;
+  font-weight:600;cursor:pointer;transition:all .2s;
+}
+.btn-ink:hover{background:var(--ink2)}
+.btn-out{
+  background:transparent;color:var(--ink2);
+  border:1.5px solid var(--sand4);border-radius:100px;
+  padding:10px 20px;font-size:13px;cursor:pointer;transition:all .2s;
+}
+.btn-out:hover{border-color:var(--ink2)}
+
+/* ── BADGES ── */
+.bdg{border-radius:100px;padding:3px 9px;font-size:10px;font-weight:600}
+.bdg-free{background:var(--sage3);color:var(--sage2)}
+.bdg-paid{background:var(--rust3);color:var(--rust)}
+.bdg-level{background:var(--sand3);color:var(--warm2)}
+
+/* ─────────────────────────
+   SCREEN B — LANDING
+───────────────────────── */
+.b-hero{
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:calc(100vh - 50px - 96px - 52px);
+}
+.b-left{
+  padding:3rem 2.5rem;display:flex;flex-direction:column;
+  justify-content:center;border-right:1px solid var(--sand3);
+  background:var(--cream);
+}
+.b-eye{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--warm2);margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:10px;
+}
+.b-eye::before{
+  content:'';width:22px;height:1px;
+  background:var(--warm2);flex-shrink:0;
+}
+.b-h1{
+  font-family:Georgia,serif;
+  font-size:clamp(30px,4vw,50px);font-weight:700;
+  letter-spacing:-2px;line-height:1;color:var(--ink);
+  margin-bottom:1.25rem;
+}
+.b-h1 em{font-style:italic;color:var(--rust)}
+.b-sub{
+  font-size:14px;color:var(--ink3);line-height:1.8;
+  max-width:320px;margin-bottom:1.75rem;
+}
+.b-acts{display:flex;gap:8px}
+.b-right{
+  background:var(--ink2);
+  display:grid;grid-template-columns:1fr 1fr;
+}
+.b-stat{
+  padding:1.75rem 1.5rem;
+  border-right:1px solid rgba(245,240,232,.07);
+  border-bottom:1px solid rgba(245,240,232,.07);
+}
+.b-stat:nth-child(2){border-right:none}
+.b-stat:nth-child(3){border-bottom:none}
+.b-stat:nth-child(4){border-right:none;border-bottom:none}
+.b-sn{
+  font-family:Georgia,serif;font-size:34px;font-weight:700;
+  color:var(--sand);letter-spacing:-2px;line-height:1;
+}
+.b-sl{
+  font-size:10px;color:rgba(245,240,232,.28);
+  text-transform:uppercase;letter-spacing:.12em;margin-top:5px;
+}
+.b-secs{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--cream);border-top:1px solid var(--sand3);
+}
+.b-sec{
+  padding:1rem 1.5rem;border-right:1px solid var(--sand3);
+  cursor:pointer;transition:background .2s;
+}
+.b-sec:last-child{border-right:none}
+.b-sec:hover{background:var(--sand)}
+.b-sec-l{
+  font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--warm2);margin-bottom:4px;
+}
+.b-sec-n{
+  font-size:13px;font-weight:700;color:var(--ink);
+  letter-spacing:-.3px;margin-bottom:2px;
+}
+.b-sec-c{
+  font-size:11px;color:var(--warm);
+  font-family:Georgia,serif;font-style:italic;
+}
+.b-bar{
+  background:var(--sand);border-top:1px solid var(--sand3);
+  padding:.85rem 1.5rem;display:flex;
+  align-items:center;gap:.85rem;overflow-x:auto;
+}
+.b-bar-l{
+  font-size:9px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--warm2);font-weight:600;white-space:nowrap;
+}
+.b-chip{
+  background:var(--cream);border:1px solid var(--sand3);
+  border-radius:9px;padding:7px 12px;
+  display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:all .2s;flex-shrink:0;
+}
+.b-chip:hover{border-color:var(--warm);background:#fff}
+.tlogo{
+  width:26px;height:26px;border-radius:6px;
+  font-size:11px;font-weight:800;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.tn{font-size:12px;font-weight:700;color:var(--ink)}
+.tc{font-size:10px;color:var(--warm2)}
+
+/* ─────────────────────────
+   SCREEN OB — ONBOARDING
+───────────────────────── */
+.trail{
+  display:flex;align-items:center;
+  padding:.85rem 1.5rem;background:var(--sand);
+  border-bottom:1px solid var(--sand3);
+}
+.ts{
+  display:flex;align-items:center;gap:7px;
+  font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:600;color:var(--sand4);
+}
+.ts.done{color:var(--sage2)}
+.ts.active{color:var(--ink)}
+.td{
+  width:20px;height:20px;border-radius:50%;
+  border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;flex-shrink:0;transition:all .3s;
+}
+.ts.done .td{background:var(--sage2);border-color:var(--sage2);color:#fff}
+.ts.active .td{background:var(--ink);border-color:var(--ink);color:var(--sand)}
+.tl{
+  flex:1;height:1px;background:var(--sand3);
+  margin:0 7px;max-width:40px;transition:background .3s;
+}
+.tl.done{background:var(--sage2)}
+.ob-wrap{
+  background:var(--cream);
+  min-height:calc(100vh - 100px);
+  display:flex;align-items:center;
+  justify-content:center;padding:2.5rem 1.5rem;
+}
+.ob-in{width:100%;max-width:520px}
+.ob-sl{
+  font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--warm2);margin-bottom:1.25rem;text-align:center;
+}
+.ob-h{
+  font-family:Georgia,serif;font-size:26px;font-weight:700;
+  letter-spacing:-1px;color:var(--ink);
+  text-align:center;margin-bottom:.4rem;
+}
+.ob-h em{font-style:italic;color:var(--rust)}
+.ob-sub{
+  font-size:13px;color:var(--warm2);
+  text-align:center;margin-bottom:2rem;
+}
+.ob-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:9px;margin-bottom:1.75rem;
+}
+.ob-card{
+  background:var(--sand);border:1.5px solid var(--sand3);
+  border-radius:var(--r);padding:1.1rem 1rem;
+  cursor:pointer;transition:all .2s;
+  text-align:center;user-select:none;
+}
+.ob-card:hover{border-color:var(--warm);background:var(--cream)}
+.ob-card.picked{border-color:var(--ink);background:var(--ink)}
+.ob-card.picked .ob-ct{color:var(--sand)}
+.ob-card.picked .ob-cs{color:rgba(245,240,232,.4)}
+.ob-ci{font-size:22px;margin-bottom:7px}
+.ob-ct{
+  font-size:13px;font-weight:700;color:var(--ink);
+  margin-bottom:2px;letter-spacing:-.3px;
+}
+.ob-cs{font-size:11px;color:var(--warm2)}
+.ob-foot{display:flex;justify-content:space-between;align-items:center}
+.ob-skip{
+  font-size:11px;color:var(--warm2);cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;
+  transition:color .2s;
+}
+.ob-skip:hover{color:var(--ink2)}
+.ob-btn{
+  background:var(--ink);color:var(--sand);border:none;
+  border-radius:100px;padding:11px 28px;font-size:12px;
+  font-weight:600;cursor:pointer;transition:all .2s;
+  opacity:.32;pointer-events:none;
+}
+.ob-btn.ready{opacity:1;pointer-events:all}
+.ob-btn.ready:hover{background:var(--ink2)}
+
+/* ─────────────────────────
+   SHARED SHELL (A + C)
+───────────────────────── */
+.shell{
+  display:grid;grid-template-columns:186px 1fr;
+  min-height:calc(100vh - 50px);background:var(--cream);
+}
+.sb{
+  background:var(--ink);padding:1.35rem 1.1rem;
+  display:flex;flex-direction:column;gap:3px;
+  position:sticky;top:50px;
+  height:calc(100vh - 50px);overflow-y:auto;
+}
+.sb-logo{
+  font-family:Georgia,serif;font-size:16px;font-weight:700;
+  color:var(--sand);letter-spacing:-.5px;
+  padding-bottom:1.1rem;
+  border-bottom:1px solid rgba(245,240,232,.08);
+  margin-bottom:.65rem;
+}
+.sb-logo em{font-style:italic;color:var(--clay2)}
+.snav{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:8px;
+  font-size:12px;color:rgba(245,240,232,.42);
+  cursor:pointer;transition:all .2s;
+}
+.snav:hover,.snav.on{
+  background:rgba(245,240,232,.08);color:var(--sand);
+}
+.sdot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--rust);flex-shrink:0;
+  opacity:0;transition:opacity .2s;
+}
+.snav.on .sdot{opacity:1}
+.slbl{
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(245,240,232,.2);
+  margin:.9rem 0 .3rem 10px;font-weight:600;
+}
+.sitm{
+  padding:6px 10px;border-radius:7px;
+  font-size:11px;color:rgba(245,240,232,.35);
+  cursor:pointer;transition:all .2s;
+}
+.sitm:hover{
+  background:rgba(245,240,232,.06);
+  color:rgba(245,240,232,.62);
+}
+.sitm.muted{color:rgba(245,240,232,.16)}
+.sb-foot{
+  margin-top:auto;padding-top:.85rem;
+  border-top:1px solid rgba(245,240,232,.07);
+}
+.suser{display:flex;align-items:center;gap:8px}
+.sav{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--rust3);display:flex;
+  align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--rust);flex-shrink:0;
+}
+.sun{font-size:11px;font-weight:600;color:rgba(245,240,232,.52)}
+.sur{font-size:10px;color:rgba(245,240,232,.22)}
+.main{padding:1.5rem;overflow:hidden}
+.sec-lbl{
+  font-size:9px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--warm2);font-weight:600;
+}
+
+/* ── SCREEN A COMPONENTS ── */
+.welcome{
+  background:var(--ink);border-radius:var(--r);
+  padding:1.35rem;margin-bottom:1.1rem;
+  display:flex;justify-content:space-between;
+  align-items:center;gap:1rem;
+}
+.wh{
+  font-family:Georgia,serif;font-size:19px;font-weight:700;
+  color:var(--sand);letter-spacing:-.5px;margin-bottom:3px;
+}
+.wh em{font-style:italic;color:var(--clay2)}
+.ws{font-size:12px;color:rgba(245,240,232,.38)}
+.wbdg{
+  background:rgba(200,90,56,.22);
+  border:1px solid rgba(200,90,56,.32);
+  border-radius:100px;padding:5px 14px;
+  font-size:11px;font-weight:600;color:var(--rust2);
+  white-space:nowrap;flex-shrink:0;
+}
+.stat-row{display:grid;gap:9px;margin-bottom:1.1rem}
+.sc{
+  background:var(--sand);border:1px solid var(--sand3);
+  border-radius:var(--r);padding:1rem;
+  cursor:pointer;transition:all .2s;
+}
+.sc:hover{
+  border-color:var(--warm);background:var(--cream);
+  transform:translateY(-2px);
+}
+.sc-l{
+  font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--warm2);margin-bottom:.5rem;font-weight:600;
+}
+.sc-v{
+  font-family:Georgia,serif;font-size:26px;font-weight:700;
+  color:var(--ink);letter-spacing:-1px;line-height:1;
+}
+.sc-s{font-size:11px;color:var(--warm2);margin-top:3px}
+.tool-list{
+  display:flex;flex-direction:column;
+  gap:7px;margin-top:.65rem;
+}
+.ti-row{
+  background:var(--sand);border:1px solid var(--sand3);
+  border-radius:var(--r);padding:.8rem 1rem;
+  display:flex;align-items:center;gap:11px;
+  cursor:pointer;transition:all .2s;
+}
+.ti-row:hover{border-color:var(--warm);background:var(--cream)}
+.tl32{
+  width:32px;height:32px;border-radius:8px;
+  font-size:13px;font-weight:800;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ti-n{font-size:13px;font-weight:700;color:var(--ink)}
+.ti-c{font-size:11px;color:var(--warm2)}
+.ti-row .bdg{margin-left:auto}
+
+/* ── SCREEN C COMPONENTS ── */
+.panel{
+  background:var(--sand);border:1px solid var(--sand3);
+  border-radius:var(--r);padding:1rem;
+}
+.pl{
+  font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--warm2);margin-bottom:.85rem;font-weight:600;
+}
+.sl-row{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.sl-row:last-child{margin-bottom:0}
+.sl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sl-n{font-size:13px;font-weight:600;color:var(--ink);flex:1}
+.sl-c{font-size:11px;color:var(--warm2)}
+.pr-item{margin-bottom:9px}
+.pr-item:last-child{margin-bottom:0}
+.pr-head{
+  display:flex;justify-content:space-between;
+  font-size:12px;color:var(--ink2);
+  margin-bottom:4px;font-weight:500;
+}
+.pr-pct{font-size:10px;color:var(--warm2)}
+.pr-pct.done{color:var(--sage2)}
+.pr-track{
+  background:var(--sand3);border-radius:100px;
+  height:3.5px;overflow:hidden;
+}
+.pr-fill{
+  height:100%;border-radius:100px;
+  background:var(--ink);transition:width .5s;
+}
+.pr-fill.r{background:var(--rust)}
+.continue{
+  margin-top:.85rem;background:var(--rust3);
+  border-radius:8px;padding:.6rem .85rem;
+  font-size:11px;color:var(--rust);font-weight:600;
+  cursor:pointer;transition:background .2s;
+}
+.continue:hover{background:#eecfc5}
+.tcard{
+  background:var(--sand);border:1px solid var(--sand3);
+  border-radius:var(--r);padding:.9rem;
+  cursor:pointer;transition:all .2s;
+}
+.tcard:hover{
+  border-color:var(--warm);background:var(--cream);
+  transform:translateY(-2px);
+}
+.tcard-h{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.tcard-n{font-size:13px;font-weight:700;color:var(--ink)}
+.tcard-c{font-size:11px;color:var(--warm2);margin-bottom:7px}
+.tcard-f{display:flex;gap:5px;flex-wrap:wrap}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .b-hero{grid-template-columns:1fr}
+  .b-right{grid-template-columns:1fr 1fr;min-height:auto}
+  .b-secs{grid-template-columns:1fr 1fr}
+  .shell{grid-template-columns:1fr}
+  .sb{display:none}
+  .nav-links{display:none}
+  .ob-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .b-right{grid-template-columns:1fr}
+  .b-secs{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     SCREEN B — LANDING PAGE
+══════════════════════════════ -->
+<div class="screen active" id="sc-b">
+  <nav class="nav">
+    <div class="logo">laize<em>.ai</em></div>
+    <ul class="nav-links">
+      <li><a>Explore</a></li>
+      <li><a>Sectors</a></li>
+      <li><a>Learn</a></li>
+    </ul>
+    <div class="nav-r">
+      <button class="pill ghost sm" onclick="go('sc-ob')">Log in</button>
+      <button class="pill" onclick="go('sc-ob')">Create account</button>
+    </div>
+  </nav>
+
+  <div class="b-hero">
+    <div class="b-left">
+      <div class="b-eye">AI discovery platform</div>
+      <h1 class="b-h1">Find the AI<br>that fits<br><em>your world</em></h1>
+      <p class="b-sub">2,400+ tools mapped by industry, skill level, and use case. Stop searching. Start using.</p>
+      <div class="b-acts">
+        <button class="btn-ink" onclick="go('sc-ob')">Get started — free</button>
+        <button class="btn-out">Browse tools</button>
+      </div>
+    </div>
+    <div class="b-right">
+      <div class="b-stat"><div class="b-sn">2,400</div><div class="b-sl">AI tools indexed</div></div>
+      <div class="b-stat"><div class="b-sn">18</div><div class="b-sl">Industry sectors</div></div>
+      <div class="b-stat"><div class="b-sn">94k</div><div class="b-sl">Learners this month</div></div>
+      <div class="b-stat"><div class="b-sn">4.8</div><div class="b-sl">Avg tool rating</div></div>
+    </div>
+  </div>
+
+  <div class="b-secs">
+    <div class="b-sec"><div class="b-sec-l">Healthcare</div><div class="b-sec-n">Medical AI</div><div class="b-sec-c">142 tools</div></div>
+    <div class="b-sec"><div class="b-sec-l">Marketing</div><div class="b-sec-n">Growth AI</div><div class="b-sec-c">218 tools</div></div>
+    <div class="b-sec"><div class="b-sec-l">Finance</div><div class="b-sec-n">FinTech AI</div><div class="b-sec-c">163 tools</div></div>
+    <div class="b-sec"><div class="b-sec-l">Design</div><div class="b-sec-n">Creative AI</div><div class="b-sec-c">201 tools</div></div>
+  </div>
+
+  <div class="b-bar">
+    <div class="b-bar-l">Trending now</div>
+    <div class="b-chip"><div class="tlogo" style="background:#c8622a">J</div><div><div class="tn">Jasper AI</div><div class="tc">Copywriting</div></div></div>
+    <div class="b-chip"><div class="tlogo" style="background:#7b6fbd">M</div><div><div class="tn">Midjourney</div><div class="tc">Image gen</div></div></div>
+    <div class="b-chip"><div class="tlogo" style="background:#5a7d6a">S</div><div><div class="tn">Surfer SEO</div><div class="tc">SEO</div></div></div>
+    <div class="b-chip"><div class="tlogo" style="background:#2a8a7a">B</div><div><div class="tn">Buffer AI</div><div class="tc">Social</div></div></div>
+    <div class="b-chip"><div class="tlogo" style="background:#c87838">G</div><div><div class="tn">Gamma</div><div class="tc">Slides</div></div></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     SCREEN OB — ONBOARDING
+══════════════════════════════ -->
+<div class="screen" id="sc-ob">
+  <nav class="nav">
+    <div class="logo">laize<em>.ai</em></div>
+    <button class="pill ghost sm" onclick="go('sc-b')">← Back</button>
+  </nav>
+
+  <div class="trail">
+    <div class="ts done" id="tr1"><div class="td">✓</div><span>Account</span></div>
+    <div class="tl done" id="tl1"></div>
+    <div class="ts active" id="tr2"><div class="td">2</div><span>Your role</span></div>
+    <div class="tl" id="tl2"></div>
+    <div class="ts" id="tr3"><div class="td">3</div><span>First sector</span></div>
+    <div class="tl" id="tl3"></div>
+    <div class="ts" id="tr4"><div class="td">4</div><span>Done</span></div>
+  </div>
+
+  <div class="ob-wrap">
+
+    <!-- Step 1: Role -->
+    <div class="ob-in" id="ob-s1">
+      <div class="ob-sl">Step 1 of 2</div>
+      <h2 class="ob-h">What best describes <em>you?</em></h2>
+      <p class="ob-sub">We'll personalise your recommendations and learning path.</p>
+      <div class="ob-grid">
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">📈</div><div class="ob-ct">Marketer</div><div class="ob-cs">Content, SEO, ads, growth</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🎨</div><div class="ob-ct">Designer</div><div class="ob-cs">Visual, product, creative</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">💻</div><div class="ob-ct">Developer</div><div class="ob-cs">Code, APIs, automation</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🏢</div><div class="ob-ct">Founder</div><div class="ob-cs">Strategy, ops, product</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🎓</div><div class="ob-ct">Student</div><div class="ob-cs">Learning, research, study</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b1')"><div class="ob-ci">🩺</div><div class="ob-ct">Healthcare</div><div class="ob-cs">Clinical, research, admin</div></div>
+      </div>
+      <div class="ob-foot">
+        <span class="ob-skip" onclick="goStep2()">Skip for now</span>
+        <button class="ob-btn" id="ob-b1" onclick="goStep2()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Sector -->
+    <div class="ob-in hidden" id="ob-s2">
+      <div class="ob-sl">Step 2 of 2</div>
+      <h2 class="ob-h">Pick your first <em>sector</em></h2>
+      <p class="ob-sub">You can always add more later.</p>
+      <div class="ob-grid">
+        <div class="ob-card" onclick="pick(this,'ob-b2')"><div class="ob-ci">📈</div><div class="ob-ct">Marketing</div><div class="ob-cs">218 tools</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b2')"><div class="ob-ci">🩺</div><div class="ob-ct">Healthcare</div><div class="ob-cs">142 tools</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b2')"><div class="ob-ci">💰</div><div class="ob-ct">Finance</div><div class="ob-cs">163 tools</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b2')"><div class="ob-ci">🎨</div><div class="ob-ct">Design</div><div class="ob-cs">201 tools</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b2')"><div class="ob-ci">⚖️</div><div class="ob-ct">Legal</div><div class="ob-cs">97 tools</div></div>
+        <div class="ob-card" onclick="pick(this,'ob-b2')"><div class="ob-ci">🎓</div><div class="ob-ct">Education</div><div class="ob-cs">186 tools</div></div>
+      </div>
+      <div class="ob-foot">
+        <span class="ob-skip" onclick="go('sc-a')">Skip for now</span>
+        <button class="ob-btn" id="ob-b2" onclick="go('sc-a')">Enter laize →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     SCREEN A — APP SHELL
+══════════════════════════════ -->
+<div class="screen" id="sc-a">
+  <nav class="nav">
+    <div class="logo">laize<em>.ai</em></div>
+    <ul class="nav-links">
+      <li><a class="on">Explore</a></li>
+      <li><a>Compare</a></li>
+      <li><a>Learn</a></li>
+    </ul>
+    <div class="nav-r">
+      <span class="nav-user">Alex M.</span>
+      <button class="pill" onclick="go('sc-c')">My dashboard →</button>
+    </div>
+  </nav>
+
+  <div class="shell">
+    <aside class="sb">
+      <div class="sb-logo">laize<em>.ai</em></div>
+      <div class="snav on"><div class="sdot"></div>Explore</div>
+      <div class="snav"><div class="sdot"></div>Sectors</div>
+      <div class="snav"><div class="sdot"></div>Compare</div>
+      <div class="snav"><div class="sdot"></div>Learn</div>
+      <div class="slbl">Your sectors</div>
+      <div class="sitm">Marketing</div>
+      <div class="sitm">Design</div>
+      <div class="sitm muted">+ Add sector</div>
+      <div class="sb-foot">
+        <div class="suser">
+          <div class="sav">AM</div>
+          <div><div class="sun">Alex M.</div><div class="sur">Marketer</div></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="welcome">
+        <div>
+          <div class="wh">Welcome to laize, <em>Alex</em></div>
+          <div class="ws">Your marketing toolkit is ready — 218 tools waiting.</div>
+        </div>
+        <div class="wbdg">New member</div>
+      </div>
+
+      <div class="stat-row" style="grid-template-columns:1fr 1fr">
+        <div class="sc"><div class="sc-l">Your sector</div><div class="sc-v">218</div><div class="sc-s">Marketing tools curated for you</div></div>
+        <div class="sc"><div class="sc-l">Learning path</div><div class="sc-v">4</div><div class="sc-s">Modules ready · start anytime</div></div>
+      </div>
+
+      <div class="sec-lbl" style="margin-bottom:.65rem">Recommended for marketers</div>
+      <div class="tool-list">
+        <div class="ti-row">
+          <div class="tl32" style="background:#c8622a">J</div>
+          <div><div class="ti-n">Jasper AI</div><div class="ti-c">Copywriting · Beginner</div></div>
+          <span class="bdg bdg-paid">Paid</span>
+        </div>
+        <div class="ti-row">
+          <div class="tl32" style="background:#5a7d6a">S</div>
+          <div><div class="ti-n">Surfer SEO</div><div class="ti-c">SEO · Intermediate</div></div>
+          <span class="bdg bdg-paid">Paid</span>
+        </div>
+        <div class="ti-row">
+          <div class="tl32" style="background:#2a8a7a">B</div>
+          <div><div class="ti-n">Buffer AI</div><div class="ti-c">Social media · Beginner</div></div>
+          <span class="bdg bdg-free">Free tier</span>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     SCREEN C — DASHBOARD
+══════════════════════════════ -->
+<div class="screen" id="sc-c">
+  <nav class="nav">
+    <div class="logo">laize<em>.ai</em></div>
+    <ul class="nav-links">
+      <li><a>Explore</a></li>
+      <li><a>Compare</a></li>
+      <li><a class="on">Dashboard</a></li>
+    </ul>
+    <div class="nav-r">
+      <span class="nav-user">Alex M.</span>
+      <button class="pill ghost sm" onclick="go('sc-a')">← Explore</button>
+    </div>
+  </nav>
+
+  <div class="shell">
+    <aside class="sb">
+      <div class="sb-logo">laize<em>.ai</em></div>
+      <div class="snav"><div class="sdot"></div>Explore</div>
+      <div class="snav"><div class="sdot"></div>Sectors</div>
+      <div class="snav"><div class="sdot"></div>Compare</div>
+      <div class="snav on"><div class="sdot"></div>Dashboard</div>
+      <div class="slbl">Your sectors</div>
+      <div class="sitm">Marketing</div>
+      <div class="sitm">Design</div>
+      <div class="sitm muted">+ Add sector</div>
+      <div class="sb-foot">
+        <div class="suser">
+          <div class="sav">AM</div>
+          <div><div class="sun">Alex M.</div><div class="sur">Marketer</div></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="sec-lbl" style="margin-bottom:1rem">Your overview</div>
+
+      <div class="stat-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sc"><div class="sc-l">Tools saved</div><div class="sc-v">12</div><div class="sc-s">across 2 sectors</div></div>
+        <div class="sc"><div class="sc-l">Path progress</div><div class="sc-v">35%</div><div class="sc-s">AI for marketers</div></div>
+        <div class="sc"><div class="sc-l">Streak</div><div class="sc-v">6d</div><div class="sc-s">Keep it going</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:1.1rem">
+        <div class="panel">
+          <div class="pl">Top sectors for you</div>
+          <div class="sl-row"><div class="sl-dot" style="background:#c85a38"></div><div class="sl-n">Marketing</div><div class="sl-c">218 tools</div></div>
+          <div class="sl-row"><div class="sl-dot" style="background:#5a7d6a"></div><div class="sl-n">Design</div><div class="sl-c">201 tools</div></div>
+          <div class="sl-row"><div class="sl-dot" style="background:#d4a878"></div><div class="sl-n">Engineering</div><div class="sl-c">175 tools</div></div>
+          <div class="sl-row"><div class="sl-dot" style="background:#a8845a"></div><div class="sl-n">Education</div><div class="sl-c">186 tools</div></div>
+        </div>
+        <div class="panel">
+          <div class="pl">Learning path</div>
+          <div class="pr-item">
+            <div class="pr-head"><span>AI fundamentals</span><span class="pr-pct done">Done</span></div>
+            <div class="pr-track"><div class="pr-fill" style="width:100%"></div></div>
+          </div>
+          <div class="pr-item">
+            <div class="pr-head"><span>AI copywriting</span><span class="pr-pct">60%</span></div>
+            <div class="pr-track"><div class="pr-fill r" style="width:60%"></div></div>
+          </div>
+          <div class="pr-item">
+            <div class="pr-head"><span>SEO with AI</span><span class="pr-pct">0%</span></div>
+            <div class="pr-track"><div class="pr-fill" style="width:0%"></div></div>
+          </div>
+          <div class="pr-item">
+            <div class="pr-head"><span>Campaign automation</span><span class="pr-pct">0%</span></div>
+            <div class="pr-track"><div class="pr-fill" style="width:0%"></div></div>
+          </div>
+          <div class="continue">Continue: AI copywriting →</div>
+        </div>
+      </div>
+
+      <div class="sec-lbl" style="margin-bottom:.65rem">Saved tools</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+        <div class="tcard">
+          <div class="tcard-h"><div class="tl32" style="background:#c8622a">J</div><div class="tcard-n">Jasper AI</div></div>
+          <div class="tcard-c">Marketing · Copywriting</div>
+          <div class="tcard-f"><span class="bdg bdg-paid">Paid</span><span class="bdg bdg-level">Beginner</span></div>
+        </div>
+        <div class="tcard">
+          <div class="tcard-h"><div class="tl32" style="background:#7b6fbd">M</div><div class="tcard-n">Midjourney</div></div>
+          <div class="tcard-c">Design · Image gen</div>
+          <div class="tcard-f"><span class="bdg bdg-paid">Paid</span><span class="bdg bdg-level">Beginner</span></div>
+        </div>
+        <div class="tcard">
+          <div class="tcard-h"><div class="tl32" style="background:#2a8a7a">B</div><div class="tcard-n">Buffer AI</div></div>
+          <div class="tcard-c">Marketing · Social</div>
+          <div class="tcard-f"><span class="bdg bdg-free">Free tier</span><span class="bdg bdg-level">Beginner</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+<script>
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pick(el, btnId) {
+  el.closest('.ob-in').querySelectorAll('.ob-card').forEach(c => c.classList.remove('picked'));
+  el.classList.add('picked');
+  document.getElementById(btnId).classList.add('ready');
+}
+
+function goStep2() {
+  document.getElementById('ob-s1').classList.add('hidden');
+  document.getElementById('ob-s2').classList.remove('hidden');
+  const t2 = document.getElementById('tr2');
+  t2.className = 'ts done';
+  t2.querySelector('.td').textContent = '✓';
+  document.getElementById('tr3').className = 'ts active';
+  document.getElementById('tl2').classList.add('done');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') go('sc-b');
+});
+</script>
+
+</body>
+</html>
