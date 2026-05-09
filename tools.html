@@ -249,13 +249,8 @@ async function loadTool() {
     return;
   }
 
-  // Load all data in parallel
-  const [tool, funding, features, reviews] = await Promise.all([
-    getToolBySlug(slug),
-    getToolBySlug(slug).then(t => t ? getFundingRounds(t.id) : []),
-    getToolBySlug(slug).then(t => t ? getToolFeatures(t.id) : []),
-    getToolBySlug(slug).then(t => t ? getReviews(t.id) : []),
-  ]);
+  // Step 1 — load the tool first
+  const tool = await getToolBySlug(slug);
 
   if (!tool) {
     document.getElementById('page-content').innerHTML =
@@ -266,14 +261,14 @@ async function loadTool() {
   // Update page title
   document.title = `${tool.name} — laize.ai`;
 
-  // Re-fetch with correct tool id
-  const [realFunding, realFeatures, realReviews] = await Promise.all([
+  // Step 2 — load related data using the tool id
+  const [funding, features, reviews] = await Promise.all([
     getFundingRounds(tool.id),
     getToolFeatures(tool.id),
     getReviews(tool.id),
   ]);
 
-  renderPage(tool, realFunding, realFeatures, realReviews);
+  renderPage(tool, funding, features, reviews);
 }
 
 function renderPage(tool, funding, features, reviews) {
