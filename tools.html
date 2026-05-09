@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Tool Profile — laize.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0d0a;--ink2:#1a1714;--ink3:#2e2a26;
+  --sand:#f5f0e8;--sand2:#ede6d8;--sand3:#e2d8c8;--sand4:#c8bca8;
+  --warm:#c8a882;--warm2:#a8845a;
+  --sage2:#5a7d6a;--sage3:#d8e8dc;
+  --rust:#c85a38;--rust2:#e87850;--rust3:#f5e0d8;
+  --clay2:#e8c89a;--cream:#faf8f4;
+}
+html{scroll-behavior:smooth}
+body{background:var(--sand2);font-family:'Space Grotesk',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+.nav{background:var(--ink);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:99;border-bottom:1px solid rgba(245,240,232,.06)}
+.logo{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--sand);letter-spacing:-.5px;text-decoration:none}
+.nav-links{display:flex;gap:0;list-style:none}
+.nav-links a{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,240,232,.35);padding:0 1.1rem;height:52px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .25s;text-decoration:none}
+.nav-links a:hover{color:var(--sand)}
+.nav-links a.on{color:var(--sand);border-bottom-color:var(--rust)}
+.nav-r{display:flex;gap:8px;align-items:center}
+.nav-user{font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,240,232,.3);letter-spacing:.08em}
+.pill{font-family:'Space Mono',monospace;background:var(--rust);color:#fff;border:none;padding:7px 16px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.pill:hover{background:var(--rust2)}
+.pill.ghost{background:transparent;border:1px solid rgba(245,240,232,.2);color:rgba(245,240,232,.55)}
+.pill.ghost:hover{border-color:rgba(245,240,232,.5);color:var(--sand)}
+.pill.sm{padding:6px 13px}
+
+.page{max-width:1040px;margin:0 auto;padding:2rem}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--warm2);margin-bottom:1.5rem}
+.breadcrumb a{color:var(--warm2);text-decoration:none}
+.breadcrumb a:hover{color:var(--ink)}
+.breadcrumb span{color:var(--sand4)}
+
+/* loading */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6rem 2rem;gap:1rem}
+.loading-spinner{width:24px;height:24px;border:2px solid var(--sand3);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm2)}
+.error-state{text-align:center;padding:4rem 2rem;font-family:'Space Mono',monospace;font-size:11px;color:var(--rust);letter-spacing:.08em}
+
+/* hero */
+.hero-band{background:var(--ink);padding:2rem;margin-bottom:1px;position:relative;overflow:hidden}
+.hero-band::before{content:attr(data-tool);position:absolute;right:-10px;bottom:-20px;font-family:'Space Grotesk',sans-serif;font-size:100px;font-weight:700;letter-spacing:-6px;color:rgba(245,240,232,.04);line-height:1;pointer-events:none;text-transform:uppercase}
+.hero-top{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:1.5rem}
+.tool-logo-lg{width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;font-family:'Space Mono',monospace;flex-shrink:0}
+.tool-name{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:var(--sand);letter-spacing:-1px;margin-bottom:4px}
+.tool-tagline{font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,240,232,.4);letter-spacing:.08em;margin-bottom:10px}
+.hero-tags{display:flex;gap:6px;flex-wrap:wrap}
+.htag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;padding:3px 10px;border:1px solid rgba(245,240,232,.15);color:rgba(245,240,232,.5)}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(245,240,232,.08)}
+.hs{padding:1rem 0;border-right:1px solid rgba(245,240,232,.08)}
+.hs:last-child{border-right:none}
+.hs-val{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--sand);letter-spacing:-1px;line-height:1}
+.hs-val.green{color:#7fcfa8}
+.hs-val.amber{color:var(--clay2)}
+.hs-label{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.28);margin-top:4px}
+.conf-row{display:flex;align-items:center;gap:6px;margin-top:5px}
+.conf-bar{height:2px;background:rgba(245,240,232,.12);flex:1;overflow:hidden}
+.conf-fill{height:100%;background:var(--sage2)}
+.conf-label{font-family:'Space Mono',monospace;font-size:8px;color:rgba(245,240,232,.25);white-space:nowrap}
+
+/* action bar */
+.action-bar{background:var(--sand);border:1px solid var(--sand3);border-top:none;padding:.85rem 1.5rem;display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap}
+.btn-primary{font-family:'Space Mono',monospace;background:var(--rust);color:#fff;border:none;padding:9px 20px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-primary:hover{background:var(--rust2)}
+.btn-ghost{font-family:'Space Mono',monospace;background:transparent;border:1px solid var(--sand4);color:var(--ink2);padding:8px 18px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-ghost:hover{border-color:var(--ink);background:var(--cream)}
+.action-sep{width:1px;height:20px;background:var(--sand3);margin:0 2px}
+.action-meta{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);margin-left:auto;letter-spacing:.04em}
+
+/* two col */
+.two-col{display:grid;grid-template-columns:1fr 300px;gap:12px;align-items:start}
+.panel{background:var(--cream);border:1px solid var(--sand3);margin-bottom:12px}
+.panel-hdr{padding:.85rem 1.25rem;border-bottom:1px solid var(--sand3);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm2);font-weight:700}
+.panel-num{font-family:'Space Mono',monospace;font-size:9px;color:var(--sand4);letter-spacing:.06em}
+.panel-body{padding:1.25rem}
+.tool-desc{font-size:15px;color:var(--ink3);line-height:1.85;opacity:.85;margin-bottom:1.25rem}
+.use-case-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.uc-item{background:var(--sand);border:1px solid var(--sand3);padding:.85rem;display:flex;gap:10px;align-items:flex-start}
+.uc-num{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.08em;flex-shrink:0;padding-top:2px}
+.uc-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;letter-spacing:-.3px}
+.uc-desc{font-size:12px;color:var(--ink3);line-height:1.6;opacity:.8}
+
+/* funding */
+.funding-row{display:flex;align-items:center;gap:12px;padding:.85rem 0;border-bottom:1px solid var(--sand3)}
+.funding-row:last-child{border-bottom:none;padding-bottom:0}
+.fr-round{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;background:var(--sand2);padding:3px 10px;color:var(--warm2);white-space:nowrap;border:1px solid var(--sand3)}
+.fr-amount{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.5px}
+.fr-investors{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);margin-top:2px;letter-spacing:.04em}
+.fr-date{font-family:'Space Mono',monospace;font-size:9px;color:var(--sand4);margin-left:auto;white-space:nowrap}
+.fr-conf{display:flex;align-items:center;gap:4px;margin-top:4px}
+.fr-conf-dot{width:5px;height:5px;border-radius:50%}
+.fr-conf-dot.verified{background:var(--sage2)}
+.fr-conf-dot.estimated{background:var(--clay2)}
+.fr-conf-label{font-family:'Space Mono',monospace;font-size:8px}
+.fr-conf-label.verified{color:var(--sage2)}
+.fr-conf-label.estimated{color:var(--warm2)}
+
+/* scores */
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.score-item{background:var(--sand);padding:.85rem;border:1px solid var(--sand3)}
+.score-label{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm2);margin-bottom:.6rem}
+.score-val{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-1px;line-height:1}
+.score-bar-wrap{margin-top:8px;background:var(--sand3);height:3px;overflow:hidden}
+.score-bar-fill{height:100%;transition:width .6s}
+.score-bar-fill.ink{background:var(--ink)}
+.score-bar-fill.rust{background:var(--rust)}
+.score-bar-fill.sage{background:var(--sage2)}
+
+/* features */
+.feature-row{display:flex;align-items:center;justify-content:space-between;padding:.65rem 0;border-bottom:1px solid var(--sand3)}
+.feature-row:last-child{border-bottom:none;padding-bottom:0}
+.fr-name{font-size:13px;font-weight:500;color:var(--ink)}
+.fr-check{font-family:'Space Mono',monospace;font-size:10px;font-weight:700}
+.fr-check.yes{color:var(--sage2)}
+.fr-check.no{color:var(--sand4)}
+.fr-check.partial{color:var(--warm2)}
+
+/* reviews */
+.review-form{background:var(--sand);border:1px solid var(--sand3);padding:1.25rem;margin-bottom:1rem}
+.rf-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm2);margin-bottom:1rem}
+.rf-stars{display:flex;gap:6px;margin-bottom:1rem}
+.rf-star{width:32px;height:32px;background:var(--sand2);border:1px solid var(--sand3);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s}
+.rf-star:hover,.rf-star.on{background:var(--rust);border-color:var(--rust);color:#fff}
+.rf-input{width:100%;background:var(--cream);border:1px solid var(--sand3);padding:.85rem;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--ink);outline:none;resize:vertical;min-height:80px;transition:border-color .2s;margin-bottom:8px}
+.rf-input:focus{border-color:var(--ink)}
+.rf-input::placeholder{color:var(--warm)}
+.rf-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.rf-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--warm2);margin-bottom:5px}
+.rf-text{width:100%;background:var(--cream);border:1px solid var(--sand3);padding:8px 12px;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .2s}
+.rf-text:focus{border-color:var(--ink)}
+.rf-text::placeholder{color:var(--warm)}
+.rf-submit{font-family:'Space Mono',monospace;background:var(--ink);color:var(--sand);border:none;padding:10px 22px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.rf-submit:hover{background:var(--rust)}
+.rf-success{background:var(--sage3);padding:.85rem 1rem;font-family:'Space Mono',monospace;font-size:10px;color:var(--sage2);letter-spacing:.08em}
+
+.review-item{padding:1rem 0;border-bottom:1px solid var(--sand3)}
+.review-item:last-child{border-bottom:none;padding-bottom:0}
+.rev-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.rev-avatar{width:28px;height:28px;background:var(--sand2);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:var(--warm2);flex-shrink:0}
+.rev-name{font-size:12px;font-weight:600;color:var(--ink)}
+.rev-role{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.04em}
+.rev-stars{margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:var(--rust)}
+.rev-body{font-size:12px;color:var(--ink3);line-height:1.75;opacity:.85}
+.rev-tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.rev-tag{font-family:'Space Mono',monospace;font-size:9px;border:1px solid var(--sand3);padding:2px 8px;color:var(--warm2)}
+.no-reviews{font-family:'Space Mono',monospace;font-size:10px;color:var(--warm2);letter-spacing:.08em;padding:1rem 0}
+
+/* sidebar */
+.sidebar-card{background:var(--cream);border:1px solid var(--sand3);margin-bottom:10px}
+.sc-hdr{padding:.75rem 1rem;border-bottom:1px solid var(--sand3)}
+.sc-title{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm2);font-weight:700}
+.sc-body{padding:1rem}
+.info-row{display:flex;align-items:flex-start;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--sand3);gap:8px}
+.info-row:last-child{border-bottom:none;padding-bottom:0}
+.ir-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.06em;white-space:nowrap}
+.ir-val{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--ink);text-align:right}
+.ir-val.mono{font-family:'Space Mono',monospace;font-size:11px}
+.valuation-box{background:var(--ink);padding:1.25rem}
+.vb-label{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,240,232,.3);margin-bottom:6px}
+.vb-val{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;color:var(--sand);letter-spacing:-2px;line-height:1}
+.vb-range{font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.3);margin-top:4px;letter-spacing:.04em}
+.vb-conf{display:flex;align-items:center;gap:6px;margin-top:10px}
+.vb-conf-bar{flex:1;height:2px;background:rgba(245,240,232,.1);overflow:hidden}
+.vb-conf-fill{height:100%;background:var(--clay2)}
+.vb-conf-label{font-family:'Space Mono',monospace;font-size:8px;color:rgba(245,240,232,.3)}
+.vb-source{font-family:'Space Mono',monospace;font-size:8px;color:rgba(245,240,232,.2);margin-top:8px;letter-spacing:.06em}
+.similar-item{display:flex;align-items:center;gap:10px;padding:.65rem 0;border-bottom:1px solid var(--sand3);cursor:pointer;transition:all .2s;text-decoration:none}
+.similar-item:last-child{border-bottom:none;padding-bottom:0}
+.similar-item:hover{padding-left:4px}
+.sim-logo{width:28px;height:28px;font-size:11px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace}
+.sim-name{font-size:12px;font-weight:600;color:var(--ink)}
+.sim-sector{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2)}
+.sim-arrow{font-family:'Space Mono',monospace;font-size:10px;color:var(--sand4);margin-left:auto}
+
+/* correction */
+.correction-note{background:#f5ecd8;border:1px solid var(--clay2);padding:.85rem 1rem;margin-bottom:10px;font-family:'Space Mono',monospace;font-size:9px;color:var(--warm3,#7a5c38);letter-spacing:.04em;line-height:1.6}
+.rf-select{width:100%;background:var(--cream);border:1px solid var(--sand3);padding:9px 12px;font-family:'Space Grotesk',sans-serif;font-size:13px;color:var(--ink);outline:none}
+
+@media(max-width:860px){.two-col{grid-template-columns:1fr}.use-case-grid{grid-template-columns:1fr}.score-grid{grid-template-columns:1fr}.hero-stats{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.nav-links{display:none}.page{padding:1rem}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html">laize.ai</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore</a></li>
+    <li><a href="sectors.html" class="on">Sectors</a></li>
+    <li><a href="whats-new.html">What's new</a></li>
+    <li><a href="learn.html">Learn</a></li>
+    <li><a href="compare.html">Compare</a></li>
+  </ul>
+  <div class="nav-r">
+    <span class="nav-user">Alex M.</span>
+    <button class="pill ghost sm" onclick="history.back()">← Back</button>
+  </div>
+</nav>
+
+<div class="page" id="page-content">
+  <div class="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading tool profile...</div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  db,
+  getToolBySlug,
+  getFundingRounds,
+  getToolFeatures,
+  getReviews,
+  submitReview,
+  submitCorrection
+} from './supabase.js';
+
+// ── HELPERS ───────────────────────────────────────
+function fmt(n) {
+  if (!n) return null;
+  if (n >= 1e9) return `$${(n/1e9).toFixed(1)}B`;
+  if (n >= 1e6) return `$${(n/1e6).toFixed(0)}M`;
+  if (n >= 1e3) return `$${(n/1e3).toFixed(0)}K`;
+  return `$${n}`;
+}
+
+function confPct(c) { return c ? Math.round(c * 100) : 0; }
+
+function stars(n) {
+  return '★'.repeat(n) + '☆'.repeat(5-n);
+}
+
+// ── LOAD & RENDER ─────────────────────────────────
+async function loadTool() {
+  const slug = new URLSearchParams(window.location.search).get('slug');
+  if (!slug) {
+    document.getElementById('page-content').innerHTML =
+      '<div class="error-state">No tool specified. <a href="sectors.html" style="color:var(--rust)">Browse sectors →</a></div>';
+    return;
+  }
+
+  // Load all data in parallel
+  const [tool, funding, features, reviews] = await Promise.all([
+    getToolBySlug(slug),
+    getToolBySlug(slug).then(t => t ? getFundingRounds(t.id) : []),
+    getToolBySlug(slug).then(t => t ? getToolFeatures(t.id) : []),
+    getToolBySlug(slug).then(t => t ? getReviews(t.id) : []),
+  ]);
+
+  if (!tool) {
+    document.getElementById('page-content').innerHTML =
+      '<div class="error-state">Tool not found. <a href="sectors.html" style="color:var(--rust)">Browse sectors →</a></div>';
+    return;
+  }
+
+  // Update page title
+  document.title = `${tool.name} — laize.ai`;
+
+  // Re-fetch with correct tool id
+  const [realFunding, realFeatures, realReviews] = await Promise.all([
+    getFundingRounds(tool.id),
+    getToolFeatures(tool.id),
+    getReviews(tool.id),
+  ]);
+
+  renderPage(tool, realFunding, realFeatures, realReviews);
+}
+
+function renderPage(tool, funding, features, reviews) {
+  const valFmt    = fmt(tool.valuation_usd);
+  const raisedFmt = fmt(tool.total_raised_usd);
+  const confPct_  = confPct(tool.valuation_conf);
+  const raisedConf = tool.total_raised_usd ? 95 : 0;
+
+  document.getElementById('page-content').innerHTML = `
+
+    <div class="breadcrumb">
+      <a href="sectors.html">Sectors</a>
+      <span>→</span>
+      <a href="sectors.html">${tool.sector || 'All'}</a>
+      <span>→</span>
+      ${tool.name}
+    </div>
+
+    <!-- HERO -->
+    <div class="hero-band" data-tool="${(tool.name||'').toUpperCase()}">
+      <div class="hero-top">
+        <div class="tool-logo-lg" style="background:${tool.logo_color||'#2a2a2a'}">${tool.logo_letter||tool.name[0]}</div>
+        <div>
+          <div class="tool-name">${tool.name}</div>
+          <div class="tool-tagline">${[tool.website, tool.sector, tool.founded_year ? 'Founded '+tool.founded_year : null, tool.hq_city].filter(Boolean).join(' · ')}</div>
+          <div class="hero-tags">
+            ${[tool.sector, ...(tool.tags||[]).slice(0,4), tool.skill_level, tool.pricing_model].filter(Boolean).map(t=>`<span class="htag">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hs">
+          <div class="hs-val ${valFmt?'amber':''}'">${valFmt || '—'}</div>
+          <div class="hs-label">Est. valuation</div>
+          ${valFmt ? `<div class="conf-row"><div class="conf-bar"><div class="conf-fill" style="width:${confPct_}%"></div></div><div class="conf-label">${confPct_}% conf.</div></div>` : ''}
+        </div>
+        <div class="hs">
+          <div class="hs-val ${raisedFmt?'green':''}'">${raisedFmt || '—'}</div>
+          <div class="hs-label">Total raised</div>
+          ${raisedFmt ? `<div class="conf-row"><div class="conf-bar"><div class="conf-fill" style="width:${raisedConf}%"></div></div><div class="conf-label">${raisedConf}% conf.</div></div>` : ''}
+        </div>
+        <div class="hs">
+          <div class="hs-val">${tool.users_count || '—'}</div>
+          <div class="hs-label">Users</div>
+          ${tool.users_conf ? `<div class="conf-row"><div class="conf-bar"><div class="conf-fill" style="width:${confPct(tool.users_conf)}%"></div></div><div class="conf-label">${confPct(tool.users_conf)}% conf.</div></div>` : ''}
+        </div>
+        <div class="hs">
+          <div class="hs-val ${tool.rating_overall?'green':''}'">${tool.rating_overall ? tool.rating_overall.toFixed(1) : '—'}</div>
+          <div class="hs-label">Community score</div>
+          ${tool.rating_count ? `<div class="conf-row"><div class="conf-bar"><div class="conf-fill" style="width:${Math.min(tool.rating_count*2,100)}%"></div></div><div class="conf-label">${tool.rating_count} reviews</div></div>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+      ${tool.website ? `<button class="btn-primary" onclick="window.open('${tool.website}','_blank')">Try this tool →</button>` : ''}
+      <button class="btn-ghost">+ Save to list</button>
+      <button class="btn-ghost" onclick="window.location.href='compare.html'">Compare</button>
+      <div class="action-sep"></div>
+      <button class="btn-ghost" onclick="document.getElementById('correction-panel').scrollIntoView({behavior:'smooth'})">Submit correction</button>
+      <div class="action-meta">Last updated ${tool.enriched_at ? new Date(tool.enriched_at).toLocaleDateString() : 'recently'}</div>
+    </div>
+
+    <div class="two-col">
+      <div>
+
+        <!-- OVERVIEW -->
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="panel-title">Overview</div>
+            <div class="panel-num">AI-assessed + community verified</div>
+          </div>
+          <div class="panel-body">
+            <p class="tool-desc">${tool.description || tool.tagline || 'No description available yet.'}</p>
+          </div>
+        </div>
+
+        <!-- FUNDING -->
+        ${funding.length > 0 ? `
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="panel-title">Funding rounds</div>
+            <div class="panel-num">${funding.length} rounds · ${raisedFmt || 'undisclosed'} total</div>
+          </div>
+          <div class="panel-body">
+            ${funding.map(r => `
+              <div class="funding-row">
+                <div class="fr-round">${r.round_type}</div>
+                <div>
+                  <div class="fr-amount">${fmt(r.amount_usd) || 'Undisclosed'}</div>
+                  ${(r.investors||[]).length > 0 ? `<div class="fr-investors">${r.investors.join(', ')}</div>` : ''}
+                  <div class="fr-conf">
+                    <div class="fr-conf-dot ${r.verified?'verified':'estimated'}"></div>
+                    <div class="fr-conf-label ${r.verified?'verified':'estimated'}">${r.verified ? 'Verified · Crunchbase' : `Estimated · ${Math.round((r.confidence||0.7)*100)}% conf.`}</div>
+                  </div>
+                </div>
+                <div class="fr-date">${r.announced_date ? new Date(r.announced_date).toLocaleDateString('en-US',{month:'short',year:'numeric'}) : ''}</div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+        <!-- COMMUNITY SCORES -->
+        ${tool.rating_overall ? `
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="panel-title">Community scores</div>
+            <div class="panel-num">${tool.rating_count || 0} verified reviews</div>
+          </div>
+          <div class="panel-body">
+            <div class="score-grid">
+              ${tool.rating_overall ? `<div class="score-item"><div class="score-label">Overall</div><div class="score-val">${tool.rating_overall.toFixed(1)}</div><div class="score-bar-wrap"><div class="score-bar-fill sage" style="width:${tool.rating_overall*10}%"></div></div></div>` : ''}
+              ${tool.rating_ease ? `<div class="score-item"><div class="score-label">Ease of use</div><div class="score-val">${tool.rating_ease.toFixed(1)}</div><div class="score-bar-wrap"><div class="score-bar-fill ink" style="width:${tool.rating_ease*10}%"></div></div></div>` : ''}
+              ${tool.rating_quality ? `<div class="score-item"><div class="score-label">Output quality</div><div class="score-val">${tool.rating_quality.toFixed(1)}</div><div class="score-bar-wrap"><div class="score-bar-fill ink" style="width:${tool.rating_quality*10}%"></div></div></div>` : ''}
+              ${tool.rating_value ? `<div class="score-item"><div class="score-label">Value for money</div><div class="score-val">${tool.rating_value.toFixed(1)}</div><div class="score-bar-wrap"><div class="score-bar-fill rust" style="width:${tool.rating_value*10}%"></div></div></div>` : ''}
+            </div>
+          </div>
+        </div>` : ''}
+
+        <!-- FEATURES -->
+        ${features.length > 0 ? `
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="panel-title">Feature breakdown</div>
+            <div class="panel-num">AI-assessed · community editable</div>
+          </div>
+          <div class="panel-body">
+            ${features.map(f => `
+              <div class="feature-row">
+                <div class="fr-name">${f.name}</div>
+                <div class="fr-check ${f.status}">
+                  ${f.status==='yes' ? '✓' : f.status==='no' ? '✕' : '~'}
+                  ${f.status==='yes' ? (f.detail || 'Yes') : f.status==='no' ? (f.detail || 'No') : (f.detail || 'Partial')}
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+        <!-- REVIEWS -->
+        <div class="panel">
+          <div class="panel-hdr">
+            <div class="panel-title">Community reviews</div>
+            <div class="panel-num">${reviews.length} total${tool.rating_overall ? ' · '+tool.rating_overall.toFixed(1)+' avg' : ''}</div>
+          </div>
+          <div class="panel-body">
+
+            <!-- REVIEW FORM -->
+            <div class="review-form" id="review-form">
+              <div class="rf-title">Write a review</div>
+              <div class="rf-stars" id="stars">
+                ${[1,2,3,4,5].map(n=>`<div class="rf-star" onclick="setStar(${n})" id="star-${n}">${n}</div>`).join('')}
+              </div>
+              <div class="rf-row">
+                <div>
+                  <div class="rf-label">Your name</div>
+                  <input class="rf-text" id="rev-name" placeholder="Sarah K."/>
+                </div>
+                <div>
+                  <div class="rf-label">Your role</div>
+                  <input class="rf-text" id="rev-role" placeholder="Head of Content · SaaS"/>
+                </div>
+              </div>
+              <textarea class="rf-input" id="rev-body" placeholder="Share your honest experience — what do you use it for, what works, what doesn't..."></textarea>
+              <button class="rf-submit" onclick="doSubmitReview('${tool.id}')">Submit review →</button>
+            </div>
+
+            ${reviews.length === 0
+              ? '<div class="no-reviews">No reviews yet — be the first to review this tool.</div>'
+              : reviews.map(r => `
+                <div class="review-item">
+                  <div class="rev-top">
+                    <div class="rev-avatar">${(r.reviewer_name||'?').slice(0,2).toUpperCase()}</div>
+                    <div>
+                      <div class="rev-name">${r.reviewer_name || 'Anonymous'}</div>
+                      ${r.reviewer_role ? `<div class="rev-role">${r.reviewer_role}</div>` : ''}
+                    </div>
+                    <div class="rev-stars">${stars(r.rating)}  ${r.rating}.0</div>
+                  </div>
+                  <div class="rev-body">${r.body}</div>
+                  ${(r.tags||[]).length > 0 ? `<div class="rev-tags">${r.tags.map(t=>`<span class="rev-tag">${t}</span>`).join('')}</div>` : ''}
+                </div>`).join('')
+            }
+          </div>
+        </div>
+
+        <!-- CORRECTION -->
+        <div class="panel" id="correction-panel">
+          <div class="panel-hdr">
+            <div class="panel-title">Submit a correction</div>
+            <div class="panel-num">Community maintained</div>
+          </div>
+          <div class="panel-body">
+            <div class="correction-note">All corrections are reviewed before going live. Include a source link for faster approval.</div>
+            <div class="rf-row">
+              <div>
+                <div class="rf-label">Field to correct</div>
+                <select class="rf-select" id="corr-field">
+                  <option value="valuation_usd">Valuation</option>
+                  <option value="total_raised_usd">Total raised</option>
+                  <option value="pricing_model">Pricing</option>
+                  <option value="users_count">User count</option>
+                  <option value="description">Description</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <div class="rf-label">Source URL</div>
+                <input class="rf-text" id="corr-source" type="url" placeholder="https://..."/>
+              </div>
+            </div>
+            <textarea class="rf-input" id="corr-notes" placeholder="Describe what's incorrect and what the correct value should be..."></textarea>
+            <button class="rf-submit" onclick="doSubmitCorrection('${tool.id}')">Submit correction →</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <div>
+
+        <!-- VALUATION -->
+        <div class="sidebar-card">
+          <div class="sc-hdr"><div class="sc-title">Estimated valuation</div></div>
+          ${valFmt ? `
+          <div class="valuation-box">
+            <div class="vb-label">Current est. valuation</div>
+            <div class="vb-val">${valFmt}</div>
+            ${tool.valuation_low_usd && tool.valuation_high_usd
+              ? `<div class="vb-range">Range: ${fmt(tool.valuation_low_usd)} — ${fmt(tool.valuation_high_usd)}</div>` : ''}
+            <div class="vb-conf">
+              <div class="vb-conf-bar"><div class="vb-conf-fill" style="width:${confPct_}%"></div></div>
+              <div class="vb-conf-label">${confPct_}% confidence</div>
+            </div>
+            <div class="vb-source">Source: ${tool.valuation_source || 'Estimated'} · ${tool.valuation_date ? new Date(tool.valuation_date).getFullYear() : ''}</div>
+          </div>` : `
+          <div style="padding:1.25rem;font-family:'Space Mono',monospace;font-size:10px;color:var(--warm2);letter-spacing:.06em">
+            No valuation data yet. <span style="text-decoration:underline;cursor:pointer" onclick="document.getElementById('correction-panel').scrollIntoView({behavior:'smooth'})">Submit data →</span>
+          </div>`}
+        </div>
+
+        <!-- KEY FACTS -->
+        <div class="sidebar-card">
+          <div class="sc-hdr"><div class="sc-title">Key facts</div></div>
+          <div class="sc-body">
+            ${tool.founded_year ? `<div class="info-row"><div class="ir-label">Founded</div><div class="ir-val mono">${tool.founded_year}</div></div>` : ''}
+            ${tool.hq_city ? `<div class="info-row"><div class="ir-label">HQ</div><div class="ir-val">${[tool.hq_city, tool.hq_country].filter(Boolean).join(', ')}</div></div>` : ''}
+            ${tool.employee_range ? `<div class="info-row"><div class="ir-label">Employees</div><div class="ir-val mono">${tool.employee_range}</div></div>` : ''}
+            ${tool.starting_price ? `<div class="info-row"><div class="ir-label">Pricing</div><div class="ir-val">${tool.starting_price}</div></div>` : ''}
+            <div class="info-row"><div class="ir-label">Free plan</div><div class="ir-val mono">${tool.has_free_plan ? 'Yes' : tool.has_free_trial ? `No · ${tool.trial_days||7}-day trial` : 'No'}</div></div>
+            ${tool.skill_level ? `<div class="info-row"><div class="ir-label">Skill level</div><div class="ir-val">${tool.skill_level}</div></div>` : ''}
+            <div class="info-row"><div class="ir-label">API</div><div class="ir-val mono">${tool.has_api ? 'Yes' : 'No'}</div></div>
+            ${tool.website ? `<div class="info-row"><div class="ir-label">Website</div><div class="ir-val mono"><a href="${tool.website}" target="_blank" style="color:var(--rust);text-decoration:none">${tool.website.replace('https://','').replace('http://','').split('/')[0]} ↗</a></div></div>` : ''}
+          </div>
+        </div>
+
+        <!-- COMPARE CTA -->
+        <div class="sidebar-card">
+          <div class="sc-body" style="padding:1.25rem">
+            <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--warm2);margin-bottom:.75rem">Compare this tool</div>
+            <div style="font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:1rem;opacity:.8">See how ${tool.name} stacks up against similar tools side by side.</div>
+            <button class="btn-primary" style="width:100%" onclick="window.location.href='compare.html'">Open comparison →</button>
+          </div>
+        </div>
+
+      </div>
+    </div>`;
+
+  // Attach star logic
+  window.setStar = function(n) {
+    window._selectedRating = n;
+    for (let i = 1; i <= 5; i++) {
+      document.getElementById('star-'+i)?.classList.toggle('on', i <= n);
+    }
+  };
+}
+
+// ── SUBMIT REVIEW ─────────────────────────────────
+window.doSubmitReview = async function(toolId) {
+  const rating = window._selectedRating;
+  const body   = document.getElementById('rev-body')?.value?.trim();
+  const name   = document.getElementById('rev-name')?.value?.trim();
+  const role   = document.getElementById('rev-role')?.value?.trim();
+
+  if (!rating) { alert('Please select a star rating.'); return; }
+  if (!body || body.length < 20) { alert('Please write at least 20 characters.'); return; }
+
+  const btn = document.querySelector('#review-form .rf-submit');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+
+  const result = await submitReview(toolId, { rating, body, name, role });
+
+  if (result) {
+    document.getElementById('review-form').innerHTML =
+      '<div class="rf-success">Review submitted — it will appear after moderation. Thank you!</div>';
+  } else {
+    btn.textContent = 'Submit review →';
+    btn.disabled = false;
+    alert('Submission failed. Please try again.');
+  }
+};
+
+// ── SUBMIT CORRECTION ─────────────────────────────
+window.doSubmitCorrection = async function(toolId) {
+  const field  = document.getElementById('corr-field')?.value;
+  const source = document.getElementById('corr-source')?.value?.trim();
+  const notes  = document.getElementById('corr-notes')?.value?.trim();
+
+  if (!notes || notes.length < 10) { alert('Please describe the correction.'); return; }
+
+  const btn = document.querySelector('#correction-panel .rf-submit');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+
+  const result = await submitCorrection(toolId, {
+    field, sourceUrl: source, notes, correctValue: notes,
+  });
+
+  if (result) {
+    document.querySelector('#correction-panel .panel-body').innerHTML =
+      '<div class="rf-success" style="background:var(--sage3);color:var(--sage2);padding:1rem;font-family:\'Space Mono\',monospace;font-size:10px;letter-spacing:.08em">Correction submitted — thank you! We\'ll review and apply it shortly.</div>';
+  } else {
+    btn.textContent = 'Submit correction →';
+    btn.disabled = false;
+    alert('Submission failed. Please try again.');
+  }
+};
+
+// ── START ──────────────────────────────────────────
+loadTool().catch(err => {
+  document.getElementById('page-content').innerHTML =
+    '<div class="error-state">Failed to load tool. Check your Supabase connection.</div>';
+  console.error(err);
+});
+</script>
+
+</body>
+</html>
