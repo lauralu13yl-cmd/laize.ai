@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Learn — laize.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0d0a;--ink2:#1a1714;
+  --sand:#f5f0e8;--sand2:#ede6d8;--sand3:#e2d8c8;--sand4:#c8bca8;
+  --warm2:#a8845a;--sage2:#5a7d6a;--sage3:#d8e8dc;
+  --rust:#c85a38;--rust2:#e87850;--rust3:#f5e0d8;
+  --clay2:#e8c89a;--cream:#faf8f4;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Space Grotesk',system-ui,sans-serif;
+  background:var(--cream);color:var(--ink);
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+}
+.view{display:none}.view.active{display:block}
+.mono{font-family:'Space Mono',monospace}
+
+/* ── GLOBAL NAV ── */
+.nav{
+  background:var(--ink);height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;position:sticky;top:0;z-index:200;
+  border-bottom:1px solid rgba(245,240,232,.06);
+}
+.logo{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--sand);letter-spacing:-.5px;text-decoration:none}
+.nav-links{display:flex;gap:0;list-style:none}
+.nav-links a{
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(245,240,232,.35);padding:0 1.1rem;height:52px;
+  display:flex;align-items:center;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .25s;text-decoration:none;
+}
+.nav-links a:hover{color:var(--sand)}
+.nav-links a.on{color:var(--sand);border-bottom-color:var(--rust)}
+.nav-r{display:flex;gap:10px;align-items:center}
+.nav-user{font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,240,232,.3);letter-spacing:.08em}
+.fluency-pill{
+  background:rgba(245,240,232,.08);border:1px solid rgba(245,240,232,.12);
+  padding:5px 12px;display:flex;align-items:center;gap:10px;
+}
+.fp-label{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.35)}
+.fp-score{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--sand);letter-spacing:-1px}
+.fp-track{width:52px;height:3px;background:rgba(245,240,232,.1);overflow:hidden}
+.fp-fill{height:100%;background:var(--rust);width:42%}
+.pill{
+  font-family:'Space Mono',monospace;background:var(--rust);color:#fff;border:none;
+  padding:7px 16px;font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;transition:all .2s;
+}
+.pill:hover{background:var(--rust2)}
+
+/* ════════════════════════════
+   ONBOARDING
+════════════════════════════ */
+.ob-shell{
+  display:grid;grid-template-columns:360px 1fr;
+  min-height:calc(100vh - 52px);
+}
+.ob-left{
+  background:var(--ink);padding:2.5rem 2rem;
+  display:flex;flex-direction:column;
+}
+.ob-left-logo{
+  font-family:'Space Mono',monospace;font-size:14px;font-weight:700;
+  color:rgba(245,240,232,.4);letter-spacing:-.3px;margin-bottom:2.5rem;
+}
+.ob-step-list{display:flex;flex-direction:column;gap:0;flex:1}
+.ob-sl-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:.9rem 0;border-bottom:.5px solid rgba(245,240,232,.06);
+}
+.ob-sl-item:last-child{border-bottom:none}
+.ob-sl-num{
+  width:22px;height:22px;border:1px solid rgba(245,240,232,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;font-size:9px;
+  color:rgba(245,240,232,.3);flex-shrink:0;transition:all .3s;
+}
+.ob-sl-num.done{background:var(--sage2);border-color:var(--sage2);color:#fff}
+.ob-sl-num.active{background:var(--sand);border-color:var(--sand);color:var(--ink)}
+.ob-sl-title{
+  font-size:13px;font-weight:500;
+  color:rgba(245,240,232,.35);padding-top:2px;transition:color .3s;
+}
+.ob-sl-num.done~.ob-sl-body .ob-sl-title,
+.ob-sl-num.active~.ob-sl-body .ob-sl-title{color:rgba(245,240,232,.8)}
+.ob-sl-sub{font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.2);margin-top:2px;letter-spacing:.04em}
+.ob-quote{
+  margin-top:2rem;padding-top:1.5rem;
+  border-top:.5px solid rgba(245,240,232,.07);
+}
+.ob-q-text{font-size:13px;color:rgba(245,240,232,.38);line-height:1.8;font-style:italic;margin-bottom:.65rem}
+.ob-q-attr{font-family:'Space Mono',monospace;font-size:8px;color:rgba(245,240,232,.2);letter-spacing:.08em;text-transform:uppercase}
+
+.ob-right{
+  background:var(--cream);padding:3rem 3.5rem;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.ob-progress-bar{height:2px;background:var(--sand3);margin-bottom:2.5rem;overflow:hidden}
+.ob-progress-fill{height:100%;background:var(--ink);transition:width .4s}
+.ob-eyebrow{
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--warm2);margin-bottom:.75rem;
+}
+.ob-title{
+  font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;
+  letter-spacing:-1.2px;color:var(--ink);margin-bottom:.5rem;line-height:1.1;
+}
+.ob-sub{font-size:14px;color:var(--ink);opacity:.55;margin-bottom:2rem;line-height:1.75;max-width:420px}
+.ob-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:2rem}
+.ob-options.single{grid-template-columns:1fr}
+.ob-opt{
+  background:var(--cream);border:1px solid var(--sand3);
+  padding:.9rem 1rem;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:10px;
+}
+.ob-opt:hover{border-color:var(--sand4);background:var(--sand2)}
+.ob-opt.picked{border-color:var(--ink);background:var(--ink)}
+.ob-opt.picked .ob-opt-name{color:var(--sand)}
+.ob-opt.picked .ob-opt-sub{color:rgba(245,240,232,.4)}
+.ob-opt-icon{
+  width:30px;height:30px;background:var(--sand2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;transition:background .2s;
+}
+.ob-opt.picked .ob-opt-icon{background:rgba(245,240,232,.1);color:var(--sand)}
+.ob-opt-name{font-size:13px;font-weight:600;color:var(--ink);transition:color .2s;letter-spacing:-.2px}
+.ob-opt-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);margin-top:2px;letter-spacing:.04em}
+.ob-foot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem}
+.ob-back{
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--warm2);cursor:pointer;
+  background:none;border:none;padding:0;transition:color .15s;
+}
+.ob-back:hover{color:var(--ink)}
+.ob-next{
+  font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:11px 28px;background:var(--ink);color:var(--sand);
+  border:none;cursor:pointer;transition:background .2s;
+  opacity:.3;pointer-events:none;
+}
+.ob-next.ready{opacity:1;pointer-events:all}
+.ob-next.ready:hover{background:var(--rust)}
+
+/* ════════════════════════════
+   ROADMAP REVEAL
+════════════════════════════ */
+.rm-shell{
+  display:grid;grid-template-columns:1fr 380px;
+  min-height:calc(100vh - 52px);
+}
+.rm-left{padding:2.5rem 3rem;background:var(--cream);display:flex;flex-direction:column}
+.rm-eyebrow{
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--warm2);margin-bottom:.75rem;
+}
+.rm-title{
+  font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;
+  letter-spacing:-1.5px;color:var(--ink);margin-bottom:.5rem;line-height:1.1;
+}
+.rm-title em{font-style:normal;color:var(--rust)}
+.rm-sub{font-size:14px;color:var(--ink);opacity:.55;margin-bottom:2rem;line-height:1.75;max-width:460px}
+.rm-insight{
+  background:var(--sand2);border-left:2px solid var(--rust);
+  padding:1rem 1.25rem;margin-bottom:1.5rem;
+}
+.rm-insight-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm2);margin-bottom:.5rem}
+.rm-insight-text{font-size:13px;color:var(--ink);line-height:1.75;opacity:.8}
+.rm-track-list{display:flex;flex-direction:column;gap:8px;margin-bottom:2rem}
+.rm-track{
+  background:var(--cream);border:1px solid var(--sand3);
+  padding:.9rem 1.25rem;display:flex;align-items:center;gap:1rem;
+  cursor:pointer;transition:all .2s;
+}
+.rm-track:hover{border-color:var(--sand4)}
+.rm-track.featured{border-color:var(--ink)}
+.rm-track-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--warm2);width:18px;flex-shrink:0}
+.rm-track-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px;letter-spacing:-.2px}
+.rm-track-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.04em}
+.rm-track-time{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);flex-shrink:0}
+.rm-track-badge{
+  font-family:'Space Mono',monospace;font-size:8px;
+  padding:3px 8px;flex-shrink:0;letter-spacing:.06em;font-weight:700;
+}
+.badge-start{background:var(--ink);color:var(--sand)}
+.badge-impact{background:var(--rust3);color:var(--rust)}
+.rm-cta{
+  font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  padding:13px 32px;background:var(--ink);color:var(--sand);
+  border:none;cursor:pointer;transition:background .2s;align-self:flex-start;
+}
+.rm-cta:hover{background:var(--rust)}
+
+.rm-right{background:var(--ink);padding:2.5rem;display:flex;flex-direction:column;gap:1.5rem}
+.rm-r-label{
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(245,240,232,.3);margin-bottom:.75rem;
+}
+.fd-card{background:rgba(245,240,232,.05);border:.5px solid rgba(245,240,232,.1);padding:1.25rem}
+.fd-score-row{display:flex;align-items:baseline;gap:8px;margin-bottom:.6rem}
+.fd-score{
+  font-family:'Space Grotesk',sans-serif;font-size:40px;font-weight:700;
+  color:var(--sand);letter-spacing:-2px;line-height:1;
+}
+.fd-max{font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,240,232,.3)}
+.fd-bar{height:3px;background:rgba(245,240,232,.1);margin-bottom:.65rem;overflow:hidden}
+.fd-bar-fill{height:100%;background:var(--rust)}
+.fd-desc{font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.4);line-height:1.7;letter-spacing:.04em}
+.skill-map{display:flex;flex-direction:column;gap:.6rem}
+.sm-item{display:flex;align-items:center;gap:10px}
+.sm-name{font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.4);width:100px;flex-shrink:0;letter-spacing:.04em}
+.sm-track{flex:1;height:2px;background:rgba(245,240,232,.1);overflow:hidden}
+.sm-fill{height:100%;background:rgba(245,240,232,.3)}
+.sm-fill.gap{background:var(--rust)}
+.sm-val{font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.3);width:28px;text-align:right}
+.rm-r-section{padding-top:1.25rem;border-top:.5px solid rgba(245,240,232,.08)}
+.gap-item{padding:.6rem 0;border-bottom:.5px solid rgba(245,240,232,.06)}
+.gap-item:last-child{border-bottom:none}
+.gap-name{font-size:12px;color:rgba(245,240,232,.7);margin-bottom:2px;font-weight:500}
+.gap-impact{font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.3);letter-spacing:.04em}
+
+/* ════════════════════════════
+   MAIN APP SHELL
+════════════════════════════ */
+.app-shell{
+  display:grid;grid-template-columns:240px 1fr;
+  min-height:calc(100vh - 52px);
+}
+.app-nav{
+  background:var(--cream);border-right:.5px solid var(--sand3);
+  padding:1.5rem 1.1rem;display:flex;flex-direction:column;gap:2px;
+  position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;padding:8px 10px;
+  font-size:12px;color:var(--warm2);cursor:pointer;
+  transition:all .15s;text-decoration:none;
+}
+.nav-item:hover{background:var(--sand2);color:var(--ink)}
+.nav-item.on{background:var(--sand2);color:var(--ink);font-weight:600}
+.nav-dot{width:4px;height:4px;background:var(--rust);opacity:0;flex-shrink:0}
+.nav-item.on .nav-dot{opacity:1}
+.nav-section{
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--warm2);padding:10px 10px 4px;margin-top:6px;
+}
+.nav-foot{margin-top:auto;padding-top:1rem;border-top:.5px solid var(--sand3)}
+.rb-card{background:var(--sand2);padding:.85rem;margin-bottom:.75rem}
+.rb-label{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm2);margin-bottom:.5rem}
+.rb-row{display:flex;align-items:baseline;gap:6px;margin-bottom:.5rem}
+.rb-score{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-1px}
+.rb-max{font-family:'Space Mono',monospace;font-size:10px;color:var(--warm2)}
+.rb-bar{height:3px;background:var(--sand3);overflow:hidden}
+.rb-fill{height:100%;background:var(--ink)}
+.nav-user-row{display:flex;align-items:center;gap:8px}
+.nav-av{
+  width:28px;height:28px;background:var(--rust3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--rust);
+}
+.nav-uname{font-size:12px;font-weight:600;color:var(--ink)}
+.nav-urole{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2)}
+
+/* MAIN AREA */
+.app-main{background:var(--sand2);min-height:calc(100vh - 52px)}
+.main-hdr{
+  background:var(--cream);border-bottom:.5px solid var(--sand3);
+  padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;
+}
+.mh-name{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:2px}
+.mh-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);letter-spacing:.04em}
+.mh-btn{
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:8px 18px;
+  background:var(--ink);color:var(--sand);border:none;cursor:pointer;transition:background .2s;
+}
+.mh-btn:hover{background:var(--rust)}
+.content-pad{padding:1.5rem 2rem}
+
+/* MENTOR */
+.mentor-grid{display:grid;grid-template-columns:1fr 260px;gap:10px;margin-bottom:1.5rem}
+.mentor-card{background:var(--cream);border:.5px solid var(--sand3)}
+.mc-hdr{
+  padding:.85rem 1.25rem;border-bottom:.5px solid var(--sand3);
+  display:flex;align-items:center;gap:10px;
+}
+.mc-av{
+  width:32px;height:32px;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--sand);
+}
+.mc-name{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-.2px}
+.mc-sub{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2)}
+.mc-live{width:6px;height:6px;background:var(--sage2);border-radius:50%;margin-left:auto;flex-shrink:0}
+.mc-body{padding:1.1rem 1.25rem}
+.msg{margin-bottom:1rem}
+.msg-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--warm2);margin-bottom:.4rem}
+.msg-bubble{
+  background:var(--sand2);padding:.75rem 1rem;
+  font-size:13px;color:var(--ink);line-height:1.7;
+  display:inline-block;max-width:92%;
+}
+.msg-bubble.mentor{background:var(--ink);color:rgba(245,240,232,.8)}
+.msg-bubble.mentor strong{color:var(--sand);font-weight:600}
+.qr-row{display:flex;gap:6px;flex-wrap:wrap;padding:0 1.25rem .85rem}
+.qr{
+  font-family:'Space Mono',monospace;font-size:9px;padding:5px 12px;
+  border:.5px solid var(--sand3);color:var(--warm2);
+  cursor:pointer;transition:all .15s;letter-spacing:.04em;
+}
+.qr:hover{border-color:var(--sand4);color:var(--ink)}
+.mc-input-row{
+  padding:.85rem 1.25rem;border-top:.5px solid var(--sand3);
+  display:flex;gap:8px;
+}
+.mc-inp{
+  flex:1;border:.5px solid var(--sand3);background:var(--sand2);
+  padding:8px 12px;font-family:'Space Grotesk',sans-serif;font-size:13px;
+  color:var(--ink);outline:none;transition:border-color .15s;
+}
+.mc-inp:focus{border-color:var(--sand4)}
+.mc-inp::placeholder{color:var(--warm2);font-size:12px}
+.mc-send{
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;
+  background:var(--ink);color:var(--sand);border:none;cursor:pointer;transition:background .15s;
+}
+.mc-send:hover{background:var(--rust)}
+
+/* CONTEXT PANEL */
+.context-panel{background:var(--cream);border:.5px solid var(--sand3);padding:1.1rem}
+.cp-section{margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:.5px solid var(--sand3)}
+.cp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.cp-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm2);margin-bottom:.75rem}
+.cp-skill{display:flex;align-items:center;gap:8px;margin-bottom:.5rem}
+.cp-skill:last-child{margin-bottom:0}
+.cp-sname{font-size:12px;color:var(--ink);flex:1}
+.cp-sbar{width:50px;height:2px;background:var(--sand3);overflow:hidden}
+.cp-sfill{height:100%;background:var(--ink)}
+.cp-spct{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);width:26px;text-align:right}
+.tool-row{
+  display:flex;align-items:center;gap:8px;padding:.45rem 0;
+  border-bottom:.5px solid var(--sand3);cursor:pointer;text-decoration:none;
+}
+.tool-row:last-child{border-bottom:none;padding-bottom:0}
+.tool-row:hover .tr-name{color:var(--rust)}
+.tr-logo{
+  width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.tr-name{font-size:12px;font-weight:600;color:var(--ink);flex:1;transition:color .15s}
+.tr-sector{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2)}
+
+/* TRACKS */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}
+.sh-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm2);font-weight:700}
+.sh-link{font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);cursor:pointer;transition:color .15s;text-decoration:none}
+.sh-link:hover{color:var(--ink)}
+.tracks-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.track-card{
+  background:var(--cream);border:.5px solid var(--sand3);
+  overflow:hidden;cursor:pointer;transition:all .2s;
+}
+.track-card:hover{border-color:var(--sand4);transform:translateY(-1px)}
+.track-card.featured{border-color:var(--ink);grid-column:span 2}
+.tc-accent{height:2px}
+.tc-body{padding:1.1rem 1.25rem}
+.tc-eyebrow{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm2);margin-bottom:.5rem}
+.tc-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:.4rem;letter-spacing:-.3px}
+.tc-desc{font-size:12px;color:var(--ink);opacity:.65;line-height:1.65;margin-bottom:.85rem}
+.tc-foot{display:flex;align-items:center;gap:6px}
+.tc-tag{font-family:'Space Mono',monospace;font-size:8px;padding:3px 8px;border:.5px solid var(--sand3);color:var(--warm2)}
+.tc-go{
+  font-family:'Space Mono',monospace;font-size:8px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--rust);
+  margin-left:auto;display:flex;align-items:center;gap:4px;
+}
+
+/* PROGRESS BAR INLINE */
+.prog-inline{width:100%;height:2px;background:var(--sand3);margin-top:.65rem;overflow:hidden}
+.prog-fill{height:100%;background:var(--rust)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .ob-shell{grid-template-columns:1fr}
+  .ob-left{display:none}
+  .rm-shell{grid-template-columns:1fr}
+  .rm-right{display:none}
+  .app-shell{grid-template-columns:1fr}
+  .app-nav{display:none}
+  .tracks-grid{grid-template-columns:1fr}
+  .track-card.featured{grid-column:span 1}
+  .mentor-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════════════
+     GLOBAL NAV
+═════════════════════════════ -->
+<nav class="nav">
+  <a class="logo" href="index.html">laize.ai</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore</a></li>
+    <li><a href="sectors.html">Sectors</a></li>
+    <li><a href="search.html">Search</a></li>
+    <li><a href="learn.html" class="on">Learn</a></li>
+    <li><a href="compare.html">Compare</a></li>
+  </ul>
+  <div class="nav-r">
+    <div class="fluency-pill" id="nav-fluency" style="display:none">
+      <div>
+        <div class="fp-label">AI fluency</div>
+        <div class="fp-score" id="nav-score">32</div>
+      </div>
+      <div class="fp-track"><div class="fp-fill" id="nav-fp-fill" style="width:32%"></div></div>
+    </div>
+    <span class="nav-user">Alex M.</span>
+    <button class="pill" onclick="window.location.href='index.html'">Dashboard</button>
+  </div>
+</nav>
+
+
+<!-- ═════════════════════════════
+     ONBOARDING
+═════════════════════════════ -->
+<div class="view active" id="v-onboard">
+<div class="ob-shell">
+
+  <!-- LEFT PANEL -->
+  <div class="ob-left">
+    <div class="ob-left-logo">laize.ai / learn</div>
+    <div class="ob-step-list">
+      <div class="ob-sl-item">
+        <div class="ob-sl-num done" id="sn1">✓</div>
+        <div class="ob-sl-body">
+          <div class="ob-sl-title">Your world</div>
+          <div class="ob-sl-sub">Industry + role</div>
+        </div>
+      </div>
+      <div class="ob-sl-item">
+        <div class="ob-sl-num active" id="sn2">2</div>
+        <div class="ob-sl-body">
+          <div class="ob-sl-title">Your goals</div>
+          <div class="ob-sl-sub">What you want to achieve</div>
+        </div>
+      </div>
+      <div class="ob-sl-item">
+        <div class="ob-sl-num" id="sn3">3</div>
+        <div class="ob-sl-body">
+          <div class="ob-sl-title">Your AI baseline</div>
+          <div class="ob-sl-sub">Current experience level</div>
+        </div>
+      </div>
+      <div class="ob-sl-item">
+        <div class="ob-sl-num" id="sn4">4</div>
+        <div class="ob-sl-body">
+          <div class="ob-sl-title">Your roadmap</div>
+          <div class="ob-sl-sub">Personalized path generated</div>
+        </div>
+      </div>
+    </div>
+    <div class="ob-quote">
+      <div class="ob-q-text">"The people who thrive in the next decade won't be the ones who know AI best — they'll be the ones who know how to work with it most fluently."</div>
+      <div class="ob-q-attr">laize.ai / learn</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="ob-right">
+    <div class="ob-progress-bar">
+      <div class="ob-progress-fill" id="ob-prog" style="width:40%"></div>
+    </div>
+
+    <!-- STEP 2: GOALS -->
+    <div id="ob-s2">
+      <div class="ob-eyebrow">Step 2 of 4 — Your goals</div>
+      <div class="ob-title">What do you most want AI to help you with?</div>
+      <div class="ob-sub">Choose your primary focus. This shapes your entire learning path and which tools we recommend.</div>
+      <div class="ob-options">
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-2')">
+          <div class="ob-opt-icon">⏱</div>
+          <div><div class="ob-opt-name">Save time on repetitive work</div><div class="ob-opt-sub">Automate daily tasks</div></div>
+        </div>
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-2')">
+          <div class="ob-opt-icon">✍</div>
+          <div><div class="ob-opt-name">Create better content faster</div><div class="ob-opt-sub">Writing, video, design</div></div>
+        </div>
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-2')">
+          <div class="ob-opt-icon">📈</div>
+          <div><div class="ob-opt-name">Grow my business or career</div><div class="ob-opt-sub">Strategy and competitive edge</div></div>
+        </div>
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-2')">
+          <div class="ob-opt-icon">🧠</div>
+          <div><div class="ob-opt-name">Understand AI deeply</div><div class="ob-opt-sub">Concepts, literacy, strategy</div></div>
+        </div>
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-2')">
+          <div class="ob-opt-icon">🏢</div>
+          <div><div class="ob-opt-name">Build AI into my team</div><div class="ob-opt-sub">Workflows and adoption</div></div>
+        </div>
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-2')">
+          <div class="ob-opt-icon">🚀</div>
+          <div><div class="ob-opt-name">Build something new with AI</div><div class="ob-opt-sub">Products, tools, startups</div></div>
+        </div>
+      </div>
+      <div class="ob-foot">
+        <button class="ob-back" onclick="window.location.href='index.html'">← Back to laize</button>
+        <button class="ob-next" id="ob-next-2" onclick="obNext(3)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: BASELINE -->
+    <div id="ob-s3" style="display:none">
+      <div class="ob-eyebrow">Step 3 of 4 — Your AI baseline</div>
+      <div class="ob-title">How would you honestly describe your AI experience?</div>
+      <div class="ob-sub">No right or wrong answer. This calibrates your starting point so we don't waste your time.</div>
+      <div class="ob-options single">
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-3')" style="align-items:flex-start">
+          <div class="ob-opt-icon" style="margin-top:2px">🌱</div>
+          <div>
+            <div class="ob-opt-name">Complete beginner</div>
+            <div class="ob-opt-sub">I've heard of ChatGPT but never really used AI tools properly</div>
+          </div>
+        </div>
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-3')" style="align-items:flex-start">
+          <div class="ob-opt-icon" style="margin-top:2px">🌿</div>
+          <div>
+            <div class="ob-opt-name">Casual experimenter</div>
+            <div class="ob-opt-sub">I use AI occasionally but mostly for simple things — I know there's more</div>
+          </div>
+        </div>
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-3')" style="align-items:flex-start">
+          <div class="ob-opt-icon" style="margin-top:2px">🌳</div>
+          <div>
+            <div class="ob-opt-name">Regular user</div>
+            <div class="ob-opt-sub">I use AI tools daily but haven't built real workflows or deep skills yet</div>
+          </div>
+        </div>
+        <div class="ob-opt" onclick="pickOb(this,'ob-next-3')" style="align-items:flex-start">
+          <div class="ob-opt-icon" style="margin-top:2px">⚡</div>
+          <div>
+            <div class="ob-opt-name">Confident practitioner</div>
+            <div class="ob-opt-sub">I have solid AI workflows but want to go deeper on strategy and automation</div>
+          </div>
+        </div>
+      </div>
+      <div class="ob-foot">
+        <button class="ob-back" onclick="obNext(2)">← Back</button>
+        <button class="ob-next" id="ob-next-3" onclick="showRoadmap()">Generate my roadmap →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+
+<!-- ═════════════════════════════
+     ROADMAP REVEAL
+═════════════════════════════ -->
+<div class="view" id="v-roadmap">
+<div class="rm-shell">
+
+  <div class="rm-left">
+    <div class="rm-eyebrow">Your personalized AI roadmap</div>
+    <div class="rm-title">Built for <em>marketing</em> professionals<br>who want to save time</div>
+    <div class="rm-sub">Based on your profile, we've identified the highest-impact AI skills for your specific situation. This isn't a generic course list — it's a transformation sequence built around your goals.</div>
+
+    <div class="rm-insight">
+      <div class="rm-insight-lbl">Laize analysis</div>
+      <div class="rm-insight-text">Marketing managers typically spend 40–60% of their time on tasks AI can handle in minutes — content drafting, research, and reporting. Your roadmap attacks the highest time-saving opportunities first.</div>
+    </div>
+
+    <div class="rm-track-list">
+      <div class="rm-track featured">
+        <div class="rm-track-num">01</div>
+        <div style="flex:1">
+          <div class="rm-track-name">Prompt mastery for marketers</div>
+          <div class="rm-track-sub">The foundational skill that unlocks everything else</div>
+        </div>
+        <div class="rm-track-time">45 min</div>
+        <div class="rm-track-badge badge-start">Start here</div>
+      </div>
+      <div class="rm-track">
+        <div class="rm-track-num">02</div>
+        <div style="flex:1">
+          <div class="rm-track-name">AI content workflow</div>
+          <div class="rm-track-sub">Produce a month of content in one day</div>
+        </div>
+        <div class="rm-track-time">1.5 hrs</div>
+        <div class="rm-track-badge badge-impact">High impact</div>
+      </div>
+      <div class="rm-track">
+        <div class="rm-track-num">03</div>
+        <div style="flex:1">
+          <div class="rm-track-name">SEO and research automation</div>
+          <div class="rm-track-sub">Replace hours of manual research with AI systems</div>
+        </div>
+        <div class="rm-track-time">1 hr</div>
+        <div class="rm-track-badge badge-impact">High impact</div>
+      </div>
+      <div class="rm-track">
+        <div class="rm-track-num">04</div>
+        <div style="flex:1">
+          <div class="rm-track-name">AI reporting and analytics</div>
+          <div class="rm-track-sub">Let AI turn raw data into insight automatically</div>
+        </div>
+        <div class="rm-track-time">45 min</div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);flex-shrink:0">Unlocks next</div>
+      </div>
+      <div class="rm-track">
+        <div class="rm-track-num">05</div>
+        <div style="flex:1">
+          <div class="rm-track-name">AI strategy and leadership</div>
+          <div class="rm-track-sub">Lead AI adoption and become the go-to AI person</div>
+        </div>
+        <div class="rm-track-time">2 hrs</div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--warm2);flex-shrink:0">Advanced</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button class="rm-cta" onclick="showApp()">Start my transformation →</button>
+      <button class="rm-cta" style="background:transparent;color:var(--ink);border:1px solid var(--sand3)" onclick="window.location.href='sectors.html'">Browse tools first</button>
+    </div>
+  </div>
+
+  <div class="rm-right">
+    <div>
+      <div class="rm-r-label">Your starting AI fluency</div>
+      <div class="fd-card">
+        <div class="fd-score-row">
+          <div class="fd-score">32</div>
+          <div class="fd-max">/ 100</div>
+        </div>
+        <div class="fd-bar"><div class="fd-bar-fill" style="width:32%"></div></div>
+        <div class="fd-desc">Developing — you understand the basics and use AI occasionally. Your roadmap is designed to move you to 70+ through practical implementation.</div>
+      </div>
+    </div>
+
+    <div class="rm-r-section">
+      <div class="rm-r-label">Skill map — starting point</div>
+      <div class="skill-map">
+        <div class="sm-item">
+          <div class="sm-name">Prompt craft</div>
+          <div class="sm-track"><div class="sm-fill" style="width:35%"></div></div>
+          <div class="sm-val">35%</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-name">Tool fluency</div>
+          <div class="sm-track"><div class="sm-fill" style="width:28%"></div></div>
+          <div class="sm-val">28%</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-name">Workflow design</div>
+          <div class="sm-track"><div class="sm-fill gap" style="width:10%"></div></div>
+          <div class="sm-val" style="color:var(--rust)">10%</div>
+        </div>
+        <div class="sm-item">
+          <div class="sm-name">AI strategy</div>
+          <div class="sm-track"><div class="sm-fill gap" style="width:8%"></div></div>
+          <div class="sm-val" style="color:var(--rust)">8%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rm-r-section">
+      <div class="rm-r-label">Biggest skill gaps identified</div>
+      <div class="gap-item">
+        <div class="gap-name">AI workflow automation</div>
+        <div class="gap-impact">Highest time-saving potential for your role</div>
+      </div>
+      <div class="gap-item">
+        <div class="gap-name">Content system building</div>
+        <div class="gap-impact">You're writing manually when AI could do 80%</div>
+      </div>
+      <div class="gap-item">
+        <div class="gap-name">Prompt engineering depth</div>
+        <div class="gap-impact">Better prompts = dramatically better outputs</div>
+      </div>
+    </div>
+
+    <div class="rm-r-section">
+      <div class="rm-r-label">Estimated transformation</div>
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        <div style="display:flex;justify-content:space-between">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.4)">Time saved per week</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.7)">8–12 hours</div>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.4)">Fluency score target</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.7)">32 → 75+</div>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.4)">Time to complete</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(245,240,232,.7)">6–8 hours total</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ═════════════════════════════
+     MAIN APP
+═════════════════════════════ -->
+<div class="view" id="v-app">
+<div class="app-shell">
+
+  <!-- SIDEBAR NAV -->
+  <aside class="app-nav">
+    <div class="nav-item on"><div class="nav-dot"></div>Dashboard</div>
+    <div class="nav-item"><div class="nav-dot"></div>My roadmap</div>
+    <div class="nav-item"><div class="nav-dot"></div>AI mentor</div>
+    <div class="nav-section">My learning</div>
+    <div class="nav-item" style="padding-left:18px"><div class="nav-dot"></div>Active tracks</div>
+    <div class="nav-item" style="padding-left:18px"><div class="nav-dot"></div>Workflows</div>
+    <div class="nav-item" style="padding-left:18px"><div class="nav-dot"></div>Tool library</div>
+    <div class="nav-section">Navigate</div>
+    <a class="nav-item" href="sectors.html" style="text-decoration:none"><div class="nav-dot"></div>Browse sectors</a>
+    <a class="nav-item" href="search.html" style="text-decoration:none"><div class="nav-dot"></div>Search tools</div></a>
+    <a class="nav-item" href="index.html" style="text-decoration:none"><div class="nav-dot"></div>Dashboard</a>
+    <div class="nav-section">Industry</div>
+    <div class="nav-item" style="padding-left:18px"><div class="nav-dot"></div>Marketing hub</div>
+    <div class="nav-item" style="padding-left:18px"><div class="nav-dot"></div>Community</div>
+
+    <div class="nav-foot">
+      <div class="rb-card">
+        <div class="rb-label">AI fluency score</div>
+        <div class="rb-row"><div class="rb-score">42</div><div class="rb-max">/ 100</div></div>
+        <div class="rb-bar"><div class="rb-fill" style="width:42%"></div></div>
+      </div>
+      <div class="nav-user-row">
+        <div class="nav-av">AM</div>
+        <div><div class="nav-uname">Alex M.</div><div class="nav-urole">Marketing Manager</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="app-main">
+    <div class="main-hdr">
+      <div>
+        <div class="mh-name">Good morning, Alex</div>
+        <div class="mh-sub">AI fluency 42/100 · Workflow automation track active · 3 lessons this week</div>
+      </div>
+      <button class="mh-btn">Continue learning →</button>
+    </div>
+
+    <div class="content-pad">
+
+      <!-- MENTOR + CONTEXT -->
+      <div class="mentor-grid">
+        <div class="mentor-card">
+          <div class="mc-hdr">
+            <div class="mc-av">L</div>
+            <div>
+              <div class="mc-name">Laize — AI mentor</div>
+              <div class="mc-sub">Personalized to Marketing · knows your progress</div>
+            </div>
+            <div class="mc-live"></div>
+          </div>
+          <div class="mc-body">
+            <div class="msg">
+              <div class="msg-lbl">Laize</div>
+              <div class="msg-bubble mentor">Based on your progress, the single most impactful thing you can do today is finish the <strong>prompt templating lesson</strong>. It unlocks the content workflow builder — where you'll save the most time. It's 12 minutes.</div>
+            </div>
+            <div class="msg">
+              <div class="msg-lbl" style="text-align:right">You</div>
+              <div class="msg-bubble" style="float:right">What tools should I actually start with?</div>
+            </div>
+            <div style="clear:both"></div>
+            <div class="msg" style="margin-top:1rem">
+              <div class="msg-lbl">Laize</div>
+              <div class="msg-bubble mentor">For your role: <strong>Jasper AI</strong> for content drafting, <strong>Surfer SEO</strong> for optimisation, <strong>Buffer AI</strong> for scheduling. Each one compounds the previous. Want me to build you a tool adoption plan?</div>
+            </div>
+          </div>
+          <div class="qr-row">
+            <div class="qr">Yes, build me the plan</div>
+            <div class="qr">What's my next milestone?</div>
+            <div class="qr">Show me a workflow template</div>
+          </div>
+          <div class="mc-input-row">
+            <input class="mc-inp" placeholder="Ask Laize anything about your learning path..."/>
+            <button class="mc-send">Send</button>
+          </div>
+        </div>
+
+        <div class="context-panel">
+          <div class="cp-section">
+            <div class="cp-lbl">Skill map</div>
+            <div class="cp-skill">
+              <div class="cp-sname">Prompt craft</div>
+              <div class="cp-sbar"><div class="cp-sfill" style="width:65%"></div></div>
+              <div class="cp-spct">65%</div>
+            </div>
+            <div class="cp-skill">
+              <div class="cp-sname">Tool fluency</div>
+              <div class="cp-sbar"><div class="cp-sfill" style="width:38%"></div></div>
+              <div class="cp-spct">38%</div>
+            </div>
+            <div class="cp-skill">
+              <div class="cp-sname">Workflows</div>
+              <div class="cp-sbar"><div class="cp-sfill" style="width:22%"></div></div>
+              <div class="cp-spct">22%</div>
+            </div>
+            <div class="cp-skill">
+              <div class="cp-sname">AI strategy</div>
+              <div class="cp-sbar"><div class="cp-sfill" style="width:12%"></div></div>
+              <div class="cp-spct">12%</div>
+            </div>
+          </div>
+          <div class="cp-section">
+            <div class="cp-lbl">Recommended tools</div>
+            <a class="tool-row" href="tool.html?slug=jasper-ai">
+              <div class="tr-logo" style="background:#c8622a">J</div>
+              <div><div class="tr-name">Jasper AI</div><div class="tr-sector">Copywriting</div></div>
+            </a>
+            <a class="tool-row" href="tool.html?slug=surfer-seo">
+              <div class="tr-logo" style="background:#5a7d6a">S</div>
+              <div><div class="tr-name">Surfer SEO</div><div class="tr-sector">SEO</div></div>
+            </a>
+            <a class="tool-row" href="tool.html?slug=buffer-ai">
+              <div class="tr-logo" style="background:#2a8a7a">B</div>
+              <div><div class="tr-name">Buffer AI</div><div class="tr-sector">Social media</div></div>
+            </a>
+          </div>
+          <div class="cp-section">
+            <div class="cp-lbl">Quick links</div>
+            <a class="tool-row" href="sectors.html" style="text-decoration:none">
+              <div style="font-size:12px;font-weight:600;color:var(--ink);flex:1">Browse sectors</div>
+              <div style="font-size:11px;color:var(--warm2)">→</div>
+            </a>
+            <a class="tool-row" href="search.html" style="text-decoration:none">
+              <div style="font-size:12px;font-weight:600;color:var(--ink);flex:1">Search all tools</div>
+              <div style="font-size:11px;color:var(--warm2)">→</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE TRACKS -->
+      <div style="margin-top:1.5rem">
+        <div class="section-hdr">
+          <div class="sh-lbl">Your active tracks</div>
+          <a class="sh-link" href="#">View full roadmap →</a>
+        </div>
+        <div class="tracks-grid">
+          <div class="track-card featured">
+            <div class="tc-accent" style="background:var(--rust)"></div>
+            <div class="tc-body">
+              <div class="tc-eyebrow">In progress · 40% complete</div>
+              <div class="tc-name">Prompt mastery for marketers</div>
+              <div class="tc-desc">You're 3 lessons in. The next lesson unlocks the content workflow builder — the highest-impact tool in your stack.</div>
+              <div class="prog-inline"><div class="prog-fill" style="width:40%"></div></div>
+              <div class="tc-foot" style="margin-top:.85rem">
+                <div class="tc-tag">5 lessons left</div>
+                <div class="tc-tag">12 min next lesson</div>
+                <div class="tc-go">Continue →</div>
+              </div>
+            </div>
+          </div>
+          <div class="track-card">
+            <div class="tc-accent" style="background:var(--ink)"></div>
+            <div class="tc-body">
+              <div class="tc-eyebrow">Up next</div>
+              <div class="tc-name">AI content workflow</div>
+              <div class="tc-desc">Build a system that produces a month of content in a single day. Project-based — you'll have a real workflow by the end.</div>
+              <div class="tc-foot">
+                <div class="tc-tag">1.5 hrs</div>
+                <div class="tc-tag">Project</div>
+                <div class="tc-go">Preview →</div>
+              </div>
+            </div>
+          </div>
+          <div class="track-card" style="opacity:.6">
+            <div class="tc-accent" style="background:var(--sand3)"></div>
+            <div class="tc-body">
+              <div class="tc-eyebrow">Locked — complete track 1 first</div>
+              <div class="tc-name">SEO and research automation</div>
+              <div class="tc-desc">Replace hours of manual keyword and competitor research with AI-powered systems that run themselves.</div>
+              <div class="tc-foot">
+                <div class="tc-tag">1 hr</div>
+                <div class="tc-go" style="color:var(--warm2)">Locked</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+
+<script>
+// ── VIEW MANAGEMENT ────────────────────────────
+function setView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── ONBOARDING ─────────────────────────────────
+function pickOb(el, btnId){
+  el.closest('.ob-options').querySelectorAll('.ob-opt').forEach(o=>o.classList.remove('picked'));
+  el.classList.add('picked');
+  const btn = document.getElementById(btnId);
+  if(btn){ btn.classList.add('ready'); }
+}
+
+function obNext(step){
+  document.querySelectorAll('[id^="ob-s"]').forEach(s=>s.style.display='none');
+  const el = document.getElementById('ob-s'+step);
+  if(el) el.style.display='block';
+  const pcts = {2:40,3:70};
+  const prog = document.getElementById('ob-prog');
+  if(prog && pcts[step]) prog.style.width = pcts[step]+'%';
+  const steps = [{id:'sn1',step:1},{id:'sn2',step:2},{id:'sn3',step:3},{id:'sn4',step:4}];
+  steps.forEach(({id,step:s})=>{
+    const n = document.getElementById(id);
+    if(!n) return;
+    if(s < step){ n.className='ob-sl-num done'; n.textContent='✓'; }
+    else if(s===step){ n.className='ob-sl-num active'; n.textContent=s; }
+    else{ n.className='ob-sl-num'; n.textContent=s; }
+  });
+}
+
+function showRoadmap(){
+  setView('v-roadmap');
+  document.getElementById('nav-fluency').style.display='flex';
+}
+
+function showApp(){
+  setView('v-app');
+  document.getElementById('nav-fluency').style.display='flex';
+  document.getElementById('nav-score').textContent='42';
+  document.getElementById('nav-fp-fill').style.width='42%';
+}
+
+// Initialize step 2
+obNext(2);
+</script>
+
+</body>
+</html>
