@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Search — laize.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0d0a;--ink2:#1a1714;--ink3:#2e2a26;
+  --sand:#f5f0e8;--sand2:#ede6d8;--sand3:#e2d8c8;--sand4:#c8bca8;
+  --warm:#c8a882;--warm2:#a8845a;
+  --sage2:#5a7d6a;--sage3:#d8e8dc;
+  --rust:#c85a38;--rust2:#e87850;--rust3:#f5e0d8;
+  --clay2:#e8c89a;--cream:#faf8f4;
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);font-family:'Space Grotesk',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* NAV */
+.nav{background:var(--ink);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(245,240,232,.06)}
+.logo{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--sand);letter-spacing:-.5px;text-decoration:none}
+.nav-links{display:flex;gap:0;list-style:none}
+.nav-links a{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,240,232,.35);padding:0 1.1rem;height:52px;display:flex;align-items:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .25s;text-decoration:none}
+.nav-links a:hover{color:var(--sand)}
+.nav-links a.on{color:var(--sand);border-bottom-color:var(--rust)}
+.nav-r{display:flex;gap:8px;align-items:center}
+.nav-user{font-family:'Space Mono',monospace;font-size:10px;color:rgba(245,240,232,.3);letter-spacing:.08em}
+.pill{font-family:'Space Mono',monospace;background:var(--rust);color:#fff;border:none;padding:7px 16px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.pill:hover{background:var(--rust2)}
+
+/* PAGE */
+.page{max-width:860px;margin:0 auto;padding:2.5rem 2rem}
+
+/* SEARCH HERO */
+.search-hero{margin-bottom:2.5rem}
+.sh-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--warm2);margin-bottom:.75rem;display:flex;align-items:center;gap:10px}
+.sh-eyebrow::before{content:'';width:22px;height:1px;background:var(--warm2)}
+.sh-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:700;letter-spacing:-1.5px;color:var(--ink);margin-bottom:.35rem;line-height:1}
+.sh-title em{font-style:normal;color:var(--rust)}
+.sh-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--warm2);letter-spacing:.04em;margin-bottom:1.5rem}
+
+/* SEARCH INPUT */
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-input{
+  width:100%;background:var(--sand);border:1px solid var(--sand3);
+  padding:1rem 1rem 1rem 3rem;
+  font-family:'Space Grotesk',sans-serif;font-size:18px;color:var(--ink);
+  outline:none;transition:border-color .2s;
+}
+.search-input:focus{border-color:var(--ink)}
+.search-input::placeholder{color:var(--warm);font-size:16px}
+.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:18px;color:var(--warm);pointer-events:none}
+.search-clear{position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-family:'Space Mono',monospace;font-size:10px;color:var(--warm2);cursor:pointer;background:none;border:none;letter-spacing:.08em;text-transform:uppercase;display:none}
+.search-clear.visible{display:block}
+.search-clear:hover{color:var(--ink)}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-chip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--sand3);background:var(--cream);color:var(--warm2);cursor:pointer;transition:all .2s}
+.filter-chip:hover{border-color:var(--warm2);color:var(--ink)}
+.filter-chip.on{background:var(--ink);border-color:var(--ink);color:var(--sand)}
+
+/* RESULTS META */
+.results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.85rem;border-bottom:1px solid var(--sand3)}
+.results-count{font-family:'Space Mono',monospace;font-size:10px;color:var(--warm2);letter-spacing:.08em}
+.results-count strong{color:var(--ink)}
+.sort-row{display:flex;gap:6px}
+.sort-btn{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border:1px solid var(--sand3);background:var(--cream);color:var(--warm2);cursor:pointer;transition:all .2s}
+.sort-btn:hover{border-color:var(--warm2)}
+.sort-btn.on{background:var(--ink);border-color:var(--ink);color:var(--sand)}
+
+/* RESULT CARDS */
+.results-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--sand3)}
+.result-item{
+  display:flex;align-items:flex-start;gap:1rem;padding:1.1rem 1.25rem;
+  background:var(--cream);border-bottom:1px solid var(--sand3);
+  cursor:pointer;transition:all .2s;text-decoration:none;position:relative;overflow:hidden;
+}
+.result-item:last-child{border-bottom:none}
+.result-item:hover{background:var(--sand)}
+.result-item::before{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:var(--rust);transform:scaleY(0);transform-origin:top;transition:transform .25s}
+.result-item:hover::before{transform:scaleY(1)}
+.ri-logo{width:40px;height:40px;font-size:15px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace;margin-top:2px}
+.ri-body{flex:1;min-width:0}
+.ri-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.ri-name{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.ri-sector{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--sand3);color:var(--warm2)}
+.ri-pricing{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;padding:2px 8px}
+.ri-free{background:var(--sage3);color:var(--sage2)}
+.ri-paid{background:var(--rust3);color:var(--rust)}
+.ri-desc{font-size:13px;color:var(--ink3);line-height:1.65;opacity:.8;margin-bottom:7px}
+.ri-tags{display:flex;gap:5px;flex-wrap:wrap}
+.ri-tag{font-family:'Space Mono',monospace;font-size:9px;border:1px solid var(--sand3);padding:2px 7px;color:var(--warm2)}
+.ri-tag.match{background:var(--rust3);border-color:var(--rust);color:var(--rust)}
+.ri-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.ri-rating{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-1px;line-height:1}
+.ri-rating-label{font-family:'Space Mono',monospace;font-size:8px;color:var(--warm2);letter-spacing:.08em;text-transform:uppercase}
+.ri-arrow{font-family:'Space Mono',monospace;font-size:12px;color:var(--sand4);margin-top:auto}
+
+/* STATES */
+.loading{display:flex;flex-direction:column;align-items:center;padding:4rem 2rem;gap:1rem}
+.loading-spinner{width:24px;height:24px;border:2px solid var(--sand3);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm2)}
+.empty-state{text-align:center;padding:4rem 2rem}
+.empty-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-1px;margin-bottom:.5rem}
+.empty-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--warm2);letter-spacing:.06em;margin-bottom:1.5rem}
+.empty-suggestions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.empty-sug{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--sand3);color:var(--warm2);cursor:pointer;transition:all .2s}
+.empty-sug:hover{border-color:var(--ink);color:var(--ink)}
+
+/* POPULAR TAGS */
+.popular-section{margin-bottom:2rem}
+.pop-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--warm2);margin-bottom:.75rem;font-weight:700}
+.pop-tags{display:flex;gap:6px;flex-wrap:wrap}
+.pop-tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;padding:7px 14px;border:1px solid var(--sand3);background:var(--cream);color:var(--warm2);cursor:pointer;transition:all .2s}
+.pop-tag:hover{border-color:var(--ink);color:var(--ink);background:var(--sand)}
+
+@media(max-width:600px){
+  .nav-links{display:none}
+  .results-meta{flex-direction:column;align-items:flex-start;gap:8px}
+  .ri-right{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html">laize.ai</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore</a></li>
+    <li><a href="sectors.html">Sectors</a></li>
+    <li><a href="search.html" class="on">Search</a></li>
+    <li><a href="learn.html">Learn</a></li>
+    <li><a href="compare.html">Compare</a></li>
+  </ul>
+  <div class="nav-r">
+    <span class="nav-user">Alex M.</span>
+    <button class="pill">Dashboard</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="search-hero">
+    <div class="sh-eyebrow">Global search</div>
+    <h1 class="sh-title">Find the right AI<br><em>for any use case</em></h1>
+    <p class="sh-sub">Search across 2,400+ tools by name, use case, or description</p>
+  </div>
+
+  <!-- SEARCH INPUT -->
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input
+      class="search-input"
+      id="search-input"
+      type="text"
+      placeholder="Try &quot;email marketing&quot;, &quot;code review&quot;, &quot;medical notes&quot;..."
+      autocomplete="off"
+    />
+    <button class="search-clear" id="search-clear" onclick="clearSearch()">Clear ×</button>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-row" id="filter-row">
+    <div class="filter-chip on" onclick="setFilter('all',this)">All sectors</div>
+    <div class="filter-chip" onclick="setFilter('Marketing',this)">Marketing</div>
+    <div class="filter-chip" onclick="setFilter('Design',this)">Design</div>
+    <div class="filter-chip" onclick="setFilter('Healthcare',this)">Healthcare</div>
+    <div class="filter-chip" onclick="setFilter('Finance',this)">Finance</div>
+    <div class="filter-chip" onclick="setFilter('Engineering',this)">Engineering</div>
+    <div class="filter-chip" onclick="setFilter('Sales',this)">Sales</div>
+    <div class="filter-chip" onclick="setFilter('Education',this)">Education</div>
+    <div class="filter-chip" onclick="setFilter('Legal',this)">Legal</div>
+  </div>
+
+  <!-- RESULTS AREA -->
+  <div id="results-area">
+
+    <!-- DEFAULT STATE — popular tags -->
+    <div id="default-state">
+      <div class="popular-section">
+        <div class="pop-label">Popular use cases</div>
+        <div class="pop-tags">
+          <div class="pop-tag" onclick="searchFor('email marketing')">Email marketing</div>
+          <div class="pop-tag" onclick="searchFor('image generation')">Image generation</div>
+          <div class="pop-tag" onclick="searchFor('code completion')">Code completion</div>
+          <div class="pop-tag" onclick="searchFor('clinical notes')">Clinical notes</div>
+          <div class="pop-tag" onclick="searchFor('SEO content')">SEO content</div>
+          <div class="pop-tag" onclick="searchFor('video generation')">Video generation</div>
+          <div class="pop-tag" onclick="searchFor('sales outreach')">Sales outreach</div>
+          <div class="pop-tag" onclick="searchFor('contract review')">Contract review</div>
+          <div class="pop-tag" onclick="searchFor('expense management')">Expense management</div>
+          <div class="pop-tag" onclick="searchFor('presentation')">Presentations</div>
+          <div class="pop-tag" onclick="searchFor('chatbot')">Chatbot</div>
+          <div class="pop-tag" onclick="searchFor('logo design')">Logo design</div>
+          <div class="pop-tag" onclick="searchFor('recruiting')">Recruiting</div>
+          <div class="pop-tag" onclick="searchFor('forecasting')">Forecasting</div>
+          <div class="pop-tag" onclick="searchFor('document processing')">Document processing</div>
+          <div class="pop-tag" onclick="searchFor('tutoring')">Tutoring</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results-container" style="display:none">
+      <div class="results-meta">
+        <div class="results-count" id="results-count"></div>
+        <div class="sort-row">
+          <button class="sort-btn on" onclick="setSort('rating',this)">Top rated</button>
+          <button class="sort-btn" onclick="setSort('raised',this)">Most funded</button>
+          <button class="sort-btn" onclick="setSort('name',this)">A–Z</button>
+        </div>
+      </div>
+      <div class="results-list" id="results-list"></div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading-state" style="display:none">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Searching tools...</div>
+      </div>
+    </div>
+
+    <!-- EMPTY -->
+    <div id="empty-state" style="display:none">
+      <div class="empty-state">
+        <div class="empty-title">No tools found</div>
+        <div class="empty-sub" id="empty-sub"></div>
+        <div class="empty-suggestions">
+          <div class="empty-sug" onclick="searchFor('email')">Email</div>
+          <div class="empty-sug" onclick="searchFor('code')">Code</div>
+          <div class="empty-sug" onclick="searchFor('design')">Design</div>
+          <div class="empty-sug" onclick="searchFor('writing')">Writing</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { db } from './supabase.js';
+
+let currentQuery  = '';
+let activeFilter  = 'all';
+let activeSort    = 'rating';
+let searchTimeout = null;
+let allResults    = [];
+
+// ── SEARCH ─────────────────────────────────────
+async function search(q) {
+  if (!q || q.trim().length < 2) {
+    showDefault();
+    return;
+  }
+
+  currentQuery = q.trim();
+  showLoading();
+
+  try {
+    let query = db
+      .from('tools')
+      .select(`
+        id, name, slug, tagline, description,
+        logo_letter, logo_color, sector, tags,
+        pricing_model, skill_level, has_free_plan,
+        rating_overall, rating_count,
+        total_raised_usd, valuation_usd
+      `)
+      .eq('status', 'approved')
+      .or(`name.ilike.%${q}%,description.ilike.%${q}%,tagline.ilike.%${q}%,tags.cs.{${q}}`)
+      .limit(50);
+
+    if (activeFilter !== 'all') {
+      query = query.eq('sector', activeFilter);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    allResults = data || [];
+    renderResults(q);
+
+  } catch (err) {
+    console.error('Search error:', err);
+    showEmpty(q);
+  }
+}
+
+// ── RENDER ─────────────────────────────────────
+function renderResults(q) {
+  let results = [...allResults];
+
+  // Sort
+  if (activeSort === 'rating') {
+    results.sort((a, b) => (b.rating_overall || 0) - (a.rating_overall || 0));
+  } else if (activeSort === 'raised') {
+    results.sort((a, b) => (b.total_raised_usd || 0) - (a.total_raised_usd || 0));
+  } else if (activeSort === 'name') {
+    results.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (results.length === 0) {
+    showEmpty(q);
+    return;
+  }
+
+  const qLower = q.toLowerCase();
+
+  document.getElementById('default-state').style.display    = 'none';
+  document.getElementById('loading-state').style.display    = 'none';
+  document.getElementById('empty-state').style.display      = 'none';
+  document.getElementById('results-container').style.display = 'block';
+
+  document.getElementById('results-count').innerHTML =
+    `Found <strong>${results.length}</strong> tool${results.length === 1 ? '' : 's'} for "<strong>${q}</strong>"`;
+
+  document.getElementById('results-list').innerHTML = results.map(t => {
+    const slug     = t.slug || t.name.toLowerCase().replace(/\s+/g, '-');
+    const tags     = (t.tags || []).slice(0, 4);
+    const isFree   = t.pricing_model === 'Free tier' || t.has_free_plan;
+    const raised   = t.total_raised_usd ? fmtMoney(t.total_raised_usd) : null;
+
+    return `
+      <a class="result-item" href="tool.html?slug=${slug}">
+        <div class="ri-logo" style="background:${t.logo_color || '#2a2a3a'}">${t.logo_letter || t.name[0]}</div>
+        <div class="ri-body">
+          <div class="ri-top">
+            <div class="ri-name">${highlight(t.name, q)}</div>
+            <div class="ri-sector">${t.sector || ''}</div>
+            <div class="ri-pricing ${isFree ? 'ri-free' : 'ri-paid'}">${isFree ? 'Free tier' : t.pricing_model || 'Paid'}</div>
+          </div>
+          <div class="ri-desc">${highlight(t.tagline || t.description || '', q)}</div>
+          <div class="ri-tags">
+            ${tags.map(tag => `
+              <span class="ri-tag ${tag.toLowerCase().includes(qLower) ? 'match' : ''}">${tag}</span>
+            `).join('')}
+            ${raised ? `<span class="ri-tag" style="color:var(--sage2);border-color:var(--sage3)">${raised} raised</span>` : ''}
+          </div>
+        </div>
+        <div class="ri-right">
+          ${t.rating_overall ? `
+            <div class="ri-rating">${t.rating_overall.toFixed(1)}</div>
+            <div class="ri-rating-label">${t.rating_count || 0} reviews</div>
+          ` : '<div class="ri-rating" style="color:var(--sand4)">—</div>'}
+          <div class="ri-arrow">→</div>
+        </div>
+      </a>`;
+  }).join('');
+}
+
+// ── HIGHLIGHT matching text ─────────────────────
+function highlight(text, q) {
+  if (!text || !q) return text || '';
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`(${escaped})`, 'gi'),
+    '<mark style="background:var(--clay2);color:var(--ink);padding:0 2px">$1</mark>');
+}
+
+// ── FORMAT MONEY ────────────────────────────────
+function fmtMoney(n) {
+  if (n >= 1e9) return `$${(n/1e9).toFixed(1)}B`;
+  if (n >= 1e6) return `$${(n/1e6).toFixed(0)}M`;
+  return `$${n}`;
+}
+
+// ── STATES ──────────────────────────────────────
+function showDefault() {
+  document.getElementById('default-state').style.display     = 'block';
+  document.getElementById('results-container').style.display = 'none';
+  document.getElementById('loading-state').style.display     = 'none';
+  document.getElementById('empty-state').style.display       = 'none';
+  document.getElementById('search-clear').classList.remove('visible');
+  allResults = [];
+}
+
+function showLoading() {
+  document.getElementById('default-state').style.display     = 'none';
+  document.getElementById('results-container').style.display = 'none';
+  document.getElementById('loading-state').style.display     = 'block';
+  document.getElementById('empty-state').style.display       = 'none';
+}
+
+function showEmpty(q) {
+  document.getElementById('default-state').style.display     = 'none';
+  document.getElementById('results-container').style.display = 'none';
+  document.getElementById('loading-state').style.display     = 'none';
+  document.getElementById('empty-state').style.display       = 'block';
+  document.getElementById('empty-sub').textContent =
+    `No tools matched "${q}" — try a broader term or different sector`;
+}
+
+// ── CONTROLS ────────────────────────────────────
+window.setFilter = function(val, el) {
+  activeFilter = val;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  if (currentQuery) search(currentQuery);
+};
+
+window.setSort = function(val, el) {
+  activeSort = val;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  renderResults(currentQuery);
+};
+
+window.searchFor = function(q) {
+  document.getElementById('search-input').value = q;
+  document.getElementById('search-clear').classList.add('visible');
+  search(q);
+};
+
+window.clearSearch = function() {
+  document.getElementById('search-input').value = '';
+  currentQuery = '';
+  showDefault();
+};
+
+// ── INPUT HANDLER (debounced 300ms) ─────────────
+document.getElementById('search-input').addEventListener('input', function() {
+  const val = this.value.trim();
+  document.getElementById('search-clear').classList.toggle('visible', val.length > 0);
+  clearTimeout(searchTimeout);
+  if (val.length === 0) { showDefault(); return; }
+  if (val.length < 2) return;
+  searchTimeout = setTimeout(() => search(val), 300);
+});
+
+// ── KEYBOARD: focus on / key ────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement !== document.getElementById('search-input')) {
+    e.preventDefault();
+    document.getElementById('search-input').focus();
+  }
+});
+
+// ── AUTO-FOCUS + pre-fill from URL ──────────────
+const urlQ = new URLSearchParams(window.location.search).get('q');
+if (urlQ) {
+  document.getElementById('search-input').value = urlQ;
+  document.getElementById('search-clear').classList.add('visible');
+  search(urlQ);
+} else {
+  document.getElementById('search-input').focus();
+}
+</script>
+
+</body>
+</html>
