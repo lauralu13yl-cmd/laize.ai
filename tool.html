@@ -525,17 +525,21 @@ function renderPage(tool, funding, features, reviews) {
           </div>
         </div>
 
-        <!-- COMPARE CTA -->
-        <div class="sidebar-card">
-          <div class="sc-body" style="padding:1.25rem">
-            <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--warm2);margin-bottom:.75rem">Compare this tool</div>
-            <div style="font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:1rem;opacity:.8">See how ${tool.name} stacks up against similar tools side by side.</div>
-            <button class="btn-primary" style="width:100%" onclick="window.location.href='compare.html'">Open comparison →</button>
+        <!-- COMPARE + FAV -->
+        <div class="sidebar-card" id="compare-fav-card">
+          <div class="sc-hdr"><div class="sc-title">Save &amp; compare</div></div>
+          <div class="sc-body" style="padding:1.25rem;display:flex;flex-direction:column;gap:8px">
+            <button id="tool-compare-btn" class="btn-primary" style="width:100%" onclick="toolToggleCompare()">+ Add to comparison</button>
+            <button id="tool-fav-btn" class="btn-ghost" style="width:100%" onclick="toolToggleFav()">&#9825; Save to favourites</button>
+            <a href="compare.html" class="btn-ghost" style="width:100%;text-align:center;display:block;text-decoration:none;padding:8px 18px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);border:1px solid var(--sand4)">View comparison →</a>
           </div>
         </div>
 
       </div>
     </div>`;
+
+  // Store globally for compare widget
+  window._currentTool = tool;
 
   // Attach star logic
   window.setStar = function(n) {
@@ -603,6 +607,80 @@ loadTool().catch(err => {
   document.getElementById('page-content').innerHTML =
     '<div class="error-state">Failed to load tool. Check your Supabase connection.</div>';
   console.error(err);
+});
+</script>
+
+<!-- ── COMPARE + FAVOURITES WIDGET ── -->
+<script src="compare-widget.js"></script>
+<script>
+// These run after loadTool() populates window._currentTool
+window.toolToggleCompare = function(){
+  const tool = window._currentTool;
+  if(!tool || !window.lzWidget) return;
+  const t = {
+    slug: tool.slug,
+    name: tool.name,
+    logo_letter: tool.logo_letter,
+    logo_color: tool.logo_color,
+    sector: tool.sector,
+    tagline: tool.tagline,
+    description: tool.description,
+    pricing_model: tool.pricing_model,
+    starting_price: tool.starting_price,
+    has_free_plan: tool.has_free_plan,
+    has_free_trial: tool.has_free_trial,
+    trial_days: tool.trial_days,
+    has_api: tool.has_api,
+    skill_level: tool.skill_level,
+    rating_overall: tool.rating_overall,
+    total_raised_usd: tool.total_raised_usd,
+    users_count: tool.users_count,
+    growth_signal: tool.growth_signal,
+    market_position: tool.market_position,
+    website: tool.website,
+    tags: tool.tags||[],
+  };
+  window.lzWidget.toggleCompare(t);
+  syncToolButtons();
+};
+
+window.toolToggleFav = function(){
+  const tool = window._currentTool;
+  if(!tool || !window.lzWidget) return;
+  window.lzWidget.toggleFav(tool.slug, tool.name);
+  syncToolButtons();
+};
+
+function syncToolButtons(){
+  const tool = window._currentTool;
+  if(!tool || !window.lzWidget) return;
+  const inComp = window.lzWidget.isInCompare(tool.slug);
+  const inFav  = window.lzWidget.isFav(tool.slug);
+  const cb = document.getElementById('tool-compare-btn');
+  const fb = document.getElementById('tool-fav-btn');
+  if(cb){
+    cb.textContent = inComp ? '✓ In comparison' : '+ Add to comparison';
+    cb.style.background = inComp ? 'var(--sage2)' : '';
+  }
+  if(fb){
+    fb.textContent = inFav ? '♥ Saved to favourites' : '♡ Save to favourites';
+    fb.style.background = inFav ? 'var(--rust3)' : '';
+    fb.style.borderColor = inFav ? 'var(--rust)' : '';
+    fb.style.color = inFav ? 'var(--rust)' : '';
+  }
+}
+
+// Store current tool globally when loaded, then sync buttons
+const _origLoadTool = window.loadTool;
+document.addEventListener('DOMContentLoaded', function(){
+  if(window.lzWidget) window.lzWidget.init();
+  // Poll for tool load then sync
+  const interval = setInterval(function(){
+    if(window._currentTool){
+      syncToolButtons();
+      clearInterval(interval);
+    }
+  }, 200);
 });
 </script>
 
