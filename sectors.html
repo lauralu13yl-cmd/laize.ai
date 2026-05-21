@@ -510,5 +510,86 @@ init().catch(err => {
 });
 </script>
 
+<!-- ── COMPARE + FAVOURITES WIDGET ── -->
+<script src="compare-widget.js"></script>
+<style>
+/* override tray bottom so it clears our footer if any */
+#lz-tray{font-family:'Space Mono',monospace}
+/* tool card action buttons */
+.tc .lz-card-actions{margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--sand3)}
+.tc.feat .lz-card-actions{border-top-color:rgba(245,240,232,.12)}
+.tc.feat .lz-compare-btn{border-color:rgba(245,240,232,.2);color:rgba(245,240,232,.5)}
+.tc.feat .lz-compare-btn:hover{border-color:var(--sand);color:var(--sand);background:rgba(245,240,232,.08)}
+.tc.feat .lz-compare-btn.added{background:var(--sand);color:var(--ink);border-color:var(--sand)}
+.tc.feat .lz-fav-btn{border-color:rgba(245,240,232,.2);color:rgba(245,240,232,.4)}
+.tc.feat .lz-fav-btn:hover,.tc.feat .lz-fav-btn.active{border-color:var(--rust);color:var(--rust)}
+</style>
+<script>
+// Patch renderTools to inject widget buttons into every tool card
+(function(){
+  const _orig = window.renderTools || null;
+
+  // We monkey-patch by re-defining renderTools after the original loads
+  // Instead, we hook into the DOM after render via MutationObserver
+  const observer = new MutationObserver(function(){
+    const cards = document.querySelectorAll('.tc:not([data-widget-init])');
+    if(!cards.length) return;
+    cards.forEach(function(card){
+      card.setAttribute('data-widget-init','1');
+      // Extract tool data from data attributes the card already has
+      const slug = (card.getAttribute('href')||'').replace('tool.html?slug=','');
+      if(!slug) return;
+
+      // Read from card DOM
+      const name = card.querySelector('.tc-name')?.textContent?.trim()||'';
+      const logo = card.querySelector('.tc-logo');
+      const logoLetter = logo?.textContent?.trim()||name[0]||'?';
+      const logoColor = logo?.style?.background||'#555';
+      const tagline = card.querySelector('.tc-desc')?.textContent?.trim()||'';
+      const pricingEl = card.querySelector('.tc-fl');
+      const pricingModel = pricingEl?.textContent?.trim()||'';
+      const hasFree = pricingModel.toLowerCase().includes('free') ? 'true':'false';
+
+      // Get sector from sidebar
+      const sector = document.querySelector('.sb-sector-title')?.textContent?.trim()||'';
+
+      // Create action row
+      const actions = document.createElement('div');
+      actions.className = 'lz-card-actions';
+      actions.innerHTML = `
+        <button class="lz-compare-btn"
+          data-slug="${slug}"
+          data-name="${name}"
+          data-logo-letter="${logoLetter}"
+          data-logo-color="${logoColor}"
+          data-sector="${sector}"
+          data-tagline="${tagline}"
+          data-pricing-model="${pricingModel}"
+          data-has-free-plan="${hasFree}">Compare</button>
+        <button class="lz-fav-btn"
+          data-slug="${slug}"
+          data-name="${name}"
+          title="Add to favourites">♡</button>
+      `;
+
+      // Stop clicks on action row from navigating the card link
+      actions.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); });
+
+      card.appendChild(actions);
+    });
+
+    // Re-sync button states after adding
+    if(window.lzWidget) window.lzWidget.init();
+  });
+
+  observer.observe(document.getElementById('main')||document.body, {childList:true, subtree:true});
+
+  // Init widget once DOM ready
+  document.addEventListener('DOMContentLoaded', function(){
+    if(window.lzWidget) window.lzWidget.init();
+  });
+})();
+</script>
+
 </body>
 </html>
