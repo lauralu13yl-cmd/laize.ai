@@ -146,6 +146,10 @@ body{background:var(--cream);font-family:'Space Grotesk',system-ui,sans-serif;co
 
 /* TOOLS GRID */
 .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--sand3)}
+.tc-wrap{display:flex;flex-direction:column;border-right:1px solid var(--sand3);border-bottom:1px solid var(--sand3)}
+.tc-wrap.feat{grid-column:span 2}
+.tc-wrap .tc{border:none;border-right:none}
+.tc-wrap.feat .tc{border:none}
 .tc{background:var(--cream);border-right:1px solid var(--sand3);border-bottom:1px solid var(--sand3);padding:1.25rem;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;position:relative;overflow:hidden;text-decoration:none}
 .tc:nth-child(3n){border-right:none}
 .tc:hover{background:var(--sand)}
@@ -483,20 +487,38 @@ function renderTools() {
         : tools.map((t, i) => {
             const feat = i === 0;
             const slug = t.slug || t.name.toLowerCase().replace(/\s+/g,'-');
+            const safeName = (t.name||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
+            const safeLetter = (t.logo_letter||t.name[0]||'?').replace(/'/g,"\'");
+            const safeColor = (t.logo_color||'#555').replace(/'/g,"\'");
+            const safeSector = (activeSector||'').replace(/'/g,"\'");
+            const safeTagline = (t.tagline||'').replace(/'/g,"\'").replace(/"/g,'&quot;');
             return `
-              <a class="tc ${feat?'feat':''}" href="tool.html?slug=${slug}">
-                <div class="tc-logo" style="background:${t.logo_color||'#2a2a2a'}">${t.logo_letter||t.name[0]}</div>
-                <div class="tc-top">
-                  <div class="tc-name">${t.name}</div>
-                  ${t.rating_count > 10 ? `<span class="bdg bdg-hot">★ ${t.rating_overall||''}</span>` : ''}
+              <div class="tc-wrap ${feat?'feat':''}">
+                <a class="tc ${feat?'feat':''}" href="tool.html?slug=${slug}">
+                  <div class="tc-logo" style="background:${t.logo_color||'#2a2a2a'}">${t.logo_letter||t.name[0]}</div>
+                  <div class="tc-top">
+                    <div class="tc-name">${t.name}</div>
+                    ${t.rating_count > 10 ? `<span class="bdg bdg-hot">★ ${t.rating_overall||''}</span>` : ''}
+                  </div>
+                  <div class="tc-desc">${t.tagline || t.description || ''}</div>
+                  <div class="tc-tags">${(t.tags||[]).slice(0,3).map(tag=>`<span class="tc-tag-i">${tag}</span>`).join('')}</div>
+                  <div class="tc-foot">
+                    <span class="tc-fl">${t.pricing_model||''}</span>
+                    <div style="display:flex;gap:3px">${skillDots(t.skill_level)}</div>
+                  </div>
+                </a>
+                <div class="tc-actions">
+                  <button class="tc-compare-btn" id="cmp-${slug}"
+                    onclick="handleCompare(event,'${slug}','${safeName}','${safeLetter}','${safeColor}','${safeSector}','${safeTagline}','${t.pricing_model||''}','${t.has_free_plan?'true':'false'}','${t.has_api?'true':'false'}','${t.skill_level||''}','${t.total_raised_usd||''}','${t.users_count||''}','${t.growth_signal||''}','${t.market_position||''}','${t.website||''}')"
+                    title="Add to comparison">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    Compare
+                  </button>
+                  <button class="tc-fav-btn" id="fav-${slug}"
+                    onclick="handleFav(event,'${slug}','${safeName}')"
+                    title="Save to favourites">&#9825;</button>
                 </div>
-                <div class="tc-desc">${t.tagline || t.description || ''}</div>
-                <div class="tc-tags">${(t.tags||[]).slice(0,3).map(tag=>`<span class="tc-tag-i">${tag}</span>`).join('')}</div>
-                <div class="tc-foot">
-                  <span class="tc-fl">${t.pricing_model||''}</span>
-                  <div style="display:flex;gap:3px">${skillDots(t.skill_level)}</div>
-                </div>
-              </a>`;
+              </div>`;
           }).join('')
       }
     </div>`;
@@ -513,82 +535,105 @@ init().catch(err => {
 <!-- ── COMPARE + FAVOURITES WIDGET ── -->
 <script src="compare-widget.js"></script>
 <style>
-/* override tray bottom so it clears our footer if any */
-#lz-tray{font-family:'Space Mono',monospace}
-/* tool card action buttons */
-.tc .lz-card-actions{margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--sand3)}
-.tc.feat .lz-card-actions{border-top-color:rgba(245,240,232,.12)}
-.tc.feat .lz-compare-btn{border-color:rgba(245,240,232,.2);color:rgba(245,240,232,.5)}
-.tc.feat .lz-compare-btn:hover{border-color:var(--sand);color:var(--sand);background:rgba(245,240,232,.08)}
-.tc.feat .lz-compare-btn.added{background:var(--sand);color:var(--ink);border-color:var(--sand)}
-.tc.feat .lz-fav-btn{border-color:rgba(245,240,232,.2);color:rgba(245,240,232,.4)}
-.tc.feat .lz-fav-btn:hover,.tc.feat .lz-fav-btn.active{border-color:var(--rust);color:var(--rust)}
+/* card wrapper keeps link + action row together */
+.tc-wrap{position:relative;display:flex;flex-direction:column}
+.tc-wrap.feat{grid-column:span 2}
+/* action row sits below the card link */
+.tc-actions{
+  display:flex;gap:0;border-top:1px solid var(--sand3);
+  background:var(--cream);
+}
+.tc-wrap.feat .tc-actions{background:var(--ink2);border-top-color:rgba(245,240,232,.1)}
+.tc-compare-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 0;cursor:pointer;transition:all .2s;
+  background:transparent;border:none;border-right:1px solid var(--sand3);
+  color:var(--warm2);
+}
+.tc-compare-btn:hover{background:var(--ink);color:var(--sand)}
+.tc-compare-btn.added{background:var(--ink);color:var(--sand)}
+.tc-compare-btn.added:hover{background:var(--rust);color:#fff}
+.tc-wrap.feat .tc-compare-btn{color:rgba(245,240,232,.4);border-right-color:rgba(245,240,232,.1)}
+.tc-wrap.feat .tc-compare-btn:hover{background:rgba(245,240,232,.1);color:var(--sand)}
+.tc-wrap.feat .tc-compare-btn.added{background:var(--sand);color:var(--ink)}
+.tc-fav-btn{
+  width:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:15px;cursor:pointer;transition:all .2s;
+  background:transparent;border:none;color:var(--warm2);
+}
+.tc-fav-btn:hover{color:var(--rust)}
+.tc-fav-btn.active{color:var(--rust)}
+.tc-wrap.feat .tc-fav-btn{color:rgba(245,240,232,.35)}
+.tc-wrap.feat .tc-fav-btn:hover,.tc-wrap.feat .tc-fav-btn.active{color:var(--rust2)}
+/* remove position:relative hack from old .tc since wrapper handles it */
 </style>
 <script>
-// Patch renderTools to inject widget buttons into every tool card
-(function(){
-  const _orig = window.renderTools || null;
+// ── DIRECT COMPARE + FAV HANDLERS ─────────────────
+function handleCompare(e, slug, name, letter, color, sector, tagline, pricingModel, hasFree, hasApi, skillLevel, raised, users, growth, position, website) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!window.lzWidget) return;
+  const tool = {
+    slug, name,
+    logo_letter: letter,
+    logo_color: color,
+    sector, tagline,
+    pricing_model: pricingModel,
+    has_free_plan: hasFree === 'true',
+    has_api: hasApi === 'true',
+    skill_level: skillLevel,
+    total_raised_usd: raised ? parseInt(raised) : null,
+    users_count: users || null,
+    growth_signal: growth || null,
+    market_position: position || null,
+    website: website || null,
+    tags: [],
+  };
+  window.lzWidget.toggleCompare(tool);
+  syncCardButtons();
+}
 
-  // We monkey-patch by re-defining renderTools after the original loads
-  // Instead, we hook into the DOM after render via MutationObserver
-  const observer = new MutationObserver(function(){
-    const cards = document.querySelectorAll('.tc:not([data-widget-init])');
-    if(!cards.length) return;
-    cards.forEach(function(card){
-      card.setAttribute('data-widget-init','1');
-      // Extract tool data from data attributes the card already has
-      const slug = (card.getAttribute('href')||'').replace('tool.html?slug=','');
-      if(!slug) return;
+function handleFav(e, slug, name) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!window.lzWidget) return;
+  window.lzWidget.toggleFav(slug, name);
+  syncCardButtons();
+}
 
-      // Read from card DOM
-      const name = card.querySelector('.tc-name')?.textContent?.trim()||'';
-      const logo = card.querySelector('.tc-logo');
-      const logoLetter = logo?.textContent?.trim()||name[0]||'?';
-      const logoColor = logo?.style?.background||'#555';
-      const tagline = card.querySelector('.tc-desc')?.textContent?.trim()||'';
-      const pricingEl = card.querySelector('.tc-fl');
-      const pricingModel = pricingEl?.textContent?.trim()||'';
-      const hasFree = pricingModel.toLowerCase().includes('free') ? 'true':'false';
-
-      // Get sector from sidebar
-      const sector = document.querySelector('.sb-sector-title')?.textContent?.trim()||'';
-
-      // Create action row
-      const actions = document.createElement('div');
-      actions.className = 'lz-card-actions';
-      actions.innerHTML = `
-        <button class="lz-compare-btn"
-          data-slug="${slug}"
-          data-name="${name}"
-          data-logo-letter="${logoLetter}"
-          data-logo-color="${logoColor}"
-          data-sector="${sector}"
-          data-tagline="${tagline}"
-          data-pricing-model="${pricingModel}"
-          data-has-free-plan="${hasFree}">Compare</button>
-        <button class="lz-fav-btn"
-          data-slug="${slug}"
-          data-name="${name}"
-          title="Add to favourites">♡</button>
-      `;
-
-      // Stop clicks on action row from navigating the card link
-      actions.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); });
-
-      card.appendChild(actions);
-    });
-
-    // Re-sync button states after adding
-    if(window.lzWidget) window.lzWidget.init();
+function syncCardButtons() {
+  if (!window.lzWidget) return;
+  document.querySelectorAll('.tc-compare-btn').forEach(function(btn) {
+    const id = btn.id.replace('cmp-','');
+    const inList = window.lzWidget.isInCompare(id);
+    btn.classList.toggle('added', inList);
+    const svg = btn.querySelector('svg');
+    if (inList) {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Added';
+    } else {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Compare';
+    }
   });
-
-  observer.observe(document.getElementById('main')||document.body, {childList:true, subtree:true});
-
-  // Init widget once DOM ready
-  document.addEventListener('DOMContentLoaded', function(){
-    if(window.lzWidget) window.lzWidget.init();
+  document.querySelectorAll('.tc-fav-btn').forEach(function(btn) {
+    const id = btn.id.replace('fav-','');
+    const isFav = window.lzWidget.isFav(id);
+    btn.classList.toggle('active', isFav);
+    btn.textContent = isFav ? '♥' : '♡';
   });
-})();
+}
+
+// Init widget and sync on load
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.lzWidget) { window.lzWidget.init(); }
+});
+
+// Also sync when tools re-render (filters change)
+const _origRenderTools = window.renderTools;
+// We observe DOM changes to re-sync after filter renders
+new MutationObserver(function() { syncCardButtons(); })
+  .observe(document.getElementById('main') || document.body, { childList: true, subtree: false });
 </script>
 
 </body>
