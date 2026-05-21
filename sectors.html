@@ -546,111 +546,203 @@ init().catch(err => {
 });
 </script>
 
-<!-- ── COMPARE + FAVOURITES WIDGET ── -->
-<script src="compare-widget.js"></script>
+<!-- ── COMPARE + FAV — fully inlined, no external deps ── -->
 <style>
-/* card wrapper keeps link + action row together */
-.tc-wrap{position:relative;display:flex;flex-direction:column}
+.tc-wrap{display:flex;flex-direction:column;border-right:1px solid var(--sand3);border-bottom:1px solid var(--sand3)}
 .tc-wrap.feat{grid-column:span 2}
-/* action row sits below the card link */
-.tc-actions{
-  display:flex;gap:0;border-top:1px solid var(--sand3);
-  background:var(--cream);
-}
-.tc-wrap.feat .tc-actions{background:var(--ink2);border-top-color:rgba(245,240,232,.1)}
-.tc-compare-btn{
+.tc-wrap .tc{border:none}
+.tc-actions{display:flex;border-top:1px solid var(--sand3)}
+.tc-wrap.feat .tc-actions{border-top-color:rgba(245,240,232,.12)}
+.tc-cmp{
   flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
-  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;
-  padding:9px 0;cursor:pointer;transition:all .2s;
-  background:transparent;border:none;border-right:1px solid var(--sand3);
-  color:var(--warm2);
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 0;cursor:pointer;background:transparent;border:none;border-right:1px solid var(--sand3);
+  color:var(--warm2);transition:all .15s;
 }
-.tc-compare-btn:hover{background:var(--ink);color:var(--sand)}
-.tc-compare-btn.added{background:var(--ink);color:var(--sand)}
-.tc-compare-btn.added:hover{background:var(--rust);color:#fff}
-.tc-wrap.feat .tc-compare-btn{color:rgba(245,240,232,.4);border-right-color:rgba(245,240,232,.1)}
-.tc-wrap.feat .tc-compare-btn:hover{background:rgba(245,240,232,.1);color:var(--sand)}
-.tc-wrap.feat .tc-compare-btn.added{background:var(--sand);color:var(--ink)}
-.tc-fav-btn{
-  width:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  font-size:15px;cursor:pointer;transition:all .2s;
-  background:transparent;border:none;color:var(--warm2);
+.tc-cmp:hover{background:var(--ink);color:var(--sand)}
+.tc-cmp.on{background:var(--ink);color:var(--sand)}
+.tc-cmp.on:hover{background:var(--rust);color:#fff}
+.tc-wrap.feat .tc-cmp{color:rgba(245,240,232,.4);border-right-color:rgba(245,240,232,.15)}
+.tc-wrap.feat .tc-cmp:hover,.tc-wrap.feat .tc-cmp.on{background:rgba(245,240,232,.12);color:var(--sand)}
+.tc-fav{
+  width:38px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;background:transparent;border:none;color:var(--warm2);transition:color .15s;
 }
-.tc-fav-btn:hover{color:var(--rust)}
-.tc-fav-btn.active{color:var(--rust)}
-.tc-wrap.feat .tc-fav-btn{color:rgba(245,240,232,.35)}
-.tc-wrap.feat .tc-fav-btn:hover,.tc-wrap.feat .tc-fav-btn.active{color:var(--rust2)}
-/* remove position:relative hack from old .tc since wrapper handles it */
+.tc-fav:hover,.tc-fav.on{color:var(--rust)}
+/* tray */
+#lz-tray{
+  position:fixed;bottom:0;left:0;right:0;height:62px;
+  background:#0f0d0a;border-top:1px solid rgba(245,240,232,.15);
+  display:flex;align-items:center;gap:10px;padding:0 1.5rem;
+  z-index:9999;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  font-family:'Space Mono',monospace;
+}
+#lz-tray.up{transform:translateY(0)}
+.lz-tray-label{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,240,232,.35);flex-shrink:0}
+.lz-tray-chips{display:flex;gap:6px;flex:1;overflow:hidden}
+.lz-chip{display:flex;align-items:center;gap:6px;background:rgba(245,240,232,.1);border:1px solid rgba(245,240,232,.2);padding:0 10px;height:38px;flex-shrink:0}
+.lz-chip-logo{width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.lz-chip-name{font-size:11px;color:rgba(245,240,232,.85);white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}
+.lz-chip-x{font-size:11px;color:rgba(245,240,232,.4);cursor:pointer;background:none;border:none;padding:2px 4px;line-height:1;flex-shrink:0}
+.lz-chip-x:hover{color:#c85a38}
+#lz-tray-go{
+  font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:9px 20px;background:#c85a38;color:#fff;border:none;cursor:pointer;
+  flex-shrink:0;margin-left:auto;text-decoration:none;display:flex;align-items:center;
+}
+#lz-tray-go:hover{background:#e87850}
+#lz-tray-go[disabled]{background:rgba(245,240,232,.12);color:rgba(245,240,232,.3);pointer-events:none}
+#lz-tray-clear{font-size:8px;color:rgba(245,240,232,.3);cursor:pointer;background:none;border:none;letter-spacing:.08em;flex-shrink:0}
+#lz-tray-clear:hover{color:rgba(245,240,232,.6)}
+#lz-toast{
+  position:fixed;bottom:74px;right:1.5rem;z-index:10000;
+  background:#0f0d0a;color:#f5f0e8;font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.06em;padding:9px 16px;
+  opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;
+}
+#lz-toast.show{opacity:1;transform:translateY(0)}
 </style>
+
+<!-- Tray DOM -->
+<div id="lz-tray">
+  <span class="lz-tray-label">Compare</span>
+  <div class="lz-tray-chips" id="lz-chips"></div>
+  <a id="lz-tray-go" href="compare.html" disabled>Compare</a>
+  <button id="lz-tray-clear">Clear</button>
+</div>
+<div id="lz-toast"></div>
+
 <script>
-// ── COMPARE + FAV — event delegation, data-* only ─
-// Single listener on #main — works even after filter re-renders
-document.addEventListener('click', function(e) {
+(function() {
+  var MAX = 4;
+  var CMP_KEY = 'laize_compare';
+  var FAV_KEY = 'laize_favs';
 
-  // ── Compare button ──────────────────────────────
-  const cmpBtn = e.target.closest('.tc-compare-btn');
-  if (cmpBtn) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!window.lzWidget) { console.warn('lzWidget not loaded yet'); return; }
-    const slug = cmpBtn.dataset.slug;
-    const raw  = cmpBtn.dataset.tool;
-    if (!slug || !raw) { console.warn('Missing data attrs', cmpBtn); return; }
-    let tool;
-    try {
-      // dataset gives us the decoded value — just parse it
-      tool = JSON.parse(raw);
-    } catch(err) {
-      console.error('Failed to parse tool JSON:', err, raw);
-      return;
+  function getCmp() { try { return JSON.parse(localStorage.getItem(CMP_KEY) || '[]'); } catch(e) { return []; } }
+  function setCmp(a) { try { localStorage.setItem(CMP_KEY, JSON.stringify(a)); } catch(e) {} }
+  function getFav() { try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch(e) { return []; } }
+  function setFav(a) { try { localStorage.setItem(FAV_KEY, JSON.stringify(a)); } catch(e) {} }
+
+  var toastTimer;
+  function toast(msg) {
+    var el = document.getElementById('lz-toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2200);
+  }
+
+  function renderTray() {
+    var list = getCmp();
+    var tray = document.getElementById('lz-tray');
+    var chips = document.getElementById('lz-chips');
+    var go = document.getElementById('lz-tray-go');
+    if (!tray) return;
+    if (list.length === 0) { tray.classList.remove('up'); return; }
+    tray.classList.add('up');
+    chips.innerHTML = list.map(function(t) {
+      return '<div class="lz-chip">'
+        + '<div class="lz-chip-logo" style="background:' + (t.logo_color||'#555') + '">' + (t.logo_letter||t.name[0]) + '</div>'
+        + '<span class="lz-chip-name">' + t.name + '</span>'
+        + '<button class="lz-chip-x" data-remove="' + t.slug + '">&#x2715;</button>'
+        + '</div>';
+    }).join('');
+    if (list.length >= 2) {
+      go.removeAttribute('disabled');
+      go.textContent = 'Compare ' + list.length + ' →';
+    } else {
+      go.setAttribute('disabled', '');
+      go.textContent = 'Add ' + (2 - list.length) + ' more';
     }
-    window.lzWidget.toggleCompare(tool);
-    syncCardButtons();
-    return;
   }
 
-  // ── Fav button ──────────────────────────────────
-  const favBtn = e.target.closest('.tc-fav-btn');
-  if (favBtn) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!window.lzWidget) return;
-    const slug = favBtn.dataset.slug;
-    const name = favBtn.dataset.name || slug;
-    window.lzWidget.toggleFav(slug, name);
-    syncCardButtons();
-    return;
+  function syncButtons() {
+    var list = getCmp();
+    var favs = getFav();
+    var inCmp = list.map(function(t) { return t.slug; });
+    var PLUS  = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    var CHECK = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    document.querySelectorAll('.tc-cmp').forEach(function(btn) {
+      var on = inCmp.indexOf(btn.dataset.slug) >= 0;
+      btn.classList.toggle('on', on);
+      btn.innerHTML = on ? CHECK + ' Added' : PLUS + ' Compare';
+    });
+    document.querySelectorAll('.tc-fav').forEach(function(btn) {
+      var on = favs.indexOf(btn.dataset.slug) >= 0;
+      btn.classList.toggle('on', on);
+      btn.innerHTML = on ? '&#9829;' : '&#9825;';
+    });
   }
-});
 
-function syncCardButtons() {
-  if (!window.lzWidget) return;
-  const SVG_PLUS  = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
-  const SVG_CHECK = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  document.querySelectorAll('.tc-compare-btn').forEach(function(btn) {
-    const inList = window.lzWidget.isInCompare(btn.dataset.slug);
-    btn.classList.toggle('added', inList);
-    btn.innerHTML = inList
-      ? SVG_CHECK + ' Added'
-      : SVG_PLUS  + ' Compare';
+  // ── Single delegated listener ──────────────────
+  document.addEventListener('click', function(e) {
+
+    // Tray: remove chip
+    var removeBtn = e.target.closest('[data-remove]');
+    if (removeBtn) {
+      var sl = removeBtn.dataset.remove;
+      setCmp(getCmp().filter(function(t) { return t.slug !== sl; }));
+      renderTray(); syncButtons(); return;
+    }
+
+    // Tray: clear
+    if (e.target.id === 'lz-tray-clear') {
+      setCmp([]); renderTray(); syncButtons(); return;
+    }
+
+    // Compare button
+    var cmpBtn = e.target.closest('.tc-cmp');
+    if (cmpBtn) {
+      e.preventDefault(); e.stopPropagation();
+      var slug = cmpBtn.dataset.slug;
+      var raw  = cmpBtn.dataset.tool;
+      if (!slug || !raw) return;
+      var tool;
+      try { tool = JSON.parse(raw); } catch(err) { console.error('Parse error', err, raw.substring(0,200)); return; }
+      var list = getCmp();
+      var idx = list.findIndex ? list.findIndex(function(t){return t.slug===slug;})
+                               : (function(){for(var i=0;i<list.length;i++){if(list[i].slug===slug)return i;}return -1;})();
+      if (idx >= 0) {
+        list.splice(idx, 1);
+        toast(tool.name + ' removed');
+      } else {
+        if (list.length >= MAX) { toast('Max 4 tools — remove one first'); return; }
+        list.push(tool);
+        toast(tool.name + ' added' + (list.length >= 2 ? ' — ready to compare!' : ' — add one more'));
+      }
+      setCmp(list); renderTray(); syncButtons(); return;
+    }
+
+    // Fav button
+    var favBtn = e.target.closest('.tc-fav');
+    if (favBtn) {
+      e.preventDefault(); e.stopPropagation();
+      var slug = favBtn.dataset.slug;
+      var name = favBtn.dataset.name || slug;
+      var favs = getFav();
+      var fi = favs.indexOf(slug);
+      if (fi >= 0) { favs.splice(fi,1); toast('Removed from favourites'); }
+      else { favs.push(slug); toast(name + ' saved ♥'); }
+      setFav(favs); syncButtons(); return;
+    }
   });
-  document.querySelectorAll('.tc-fav-btn').forEach(function(btn) {
-    const isFav = window.lzWidget.isFav(btn.dataset.slug);
-    btn.classList.toggle('active', isFav);
-    btn.innerHTML = isFav ? '&#9829;' : '&#9825;';
-  });
-}
 
-// Init once widget script is loaded, then sync
-document.addEventListener('DOMContentLoaded', function() {
-  if (window.lzWidget) { window.lzWidget.init(); syncCardButtons(); }
-});
+  // Init on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { renderTray(); syncButtons(); });
+  } else {
+    renderTray(); syncButtons();
+  }
 
-// Re-sync after every filter re-render (main innerHTML changes)
-new MutationObserver(function() {
-  if (window.lzWidget) syncCardButtons();
-}).observe(document.body, { childList: true, subtree: true });
+  // Re-sync whenever main re-renders (filter changes inject new cards)
+  var mainEl = document.getElementById('main') || document.body;
+  new MutationObserver(function() { syncButtons(); })
+    .observe(mainEl, { childList: true, subtree: true });
+
+  // Expose for compare.html to read
+  window.laizeCompare = { getCmp: getCmp, getFav: getFav };
+})();
 </script>
 
 </body>
